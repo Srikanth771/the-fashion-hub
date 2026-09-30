@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   FiMenu,
   FiX,
@@ -40,19 +41,21 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-[1500px] mx-auto">
-        <div className="flex items-center justify-between px-4 lg:px-8 h-16">
+          <div className="flex items-center justify-between px-4 lg:px-8 h-16">
             {/* Logo */}
 
-            <motion.div
-              //   whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-3 cursor-pointer"
-            >
-              <img
-                src={logo}
-                alt="Fashion Hub"
-                className="h-10 lg:h-12 w-auto object-contain"
-              />
-            </motion.div>
+            <Link to="/">
+              <motion.div
+                //   whileHover={{ scale: 1.05 }}
+                className="flex items-center gap-3 cursor-pointer"
+              >
+                <img
+                  src={logo}
+                  alt="Fashion Hub"
+                  className="h-10 lg:h-12 w-auto object-contain"
+                />
+              </motion.div>
+            </Link>
 
             {/* Search */}
 
@@ -105,11 +108,13 @@ export default function Navbar() {
                 <span className="text-xs mt-1">Alerts</span>
               </motion.div>
 
-              <motion.div whileHover={{ y: -3 }} className={navIcon}>
-                <FiUser size={20} />
+              <Link to="/login">
+                <motion.div whileHover={{ y: -3 }} className={navIcon}>
+                  <FiUser size={20} />
 
-                <span className="text-xs mt-1">Profile</span>
-              </motion.div>
+                  <span className="text-xs mt-1">Profile</span>
+                </motion.div>
+              </Link>
 
               <motion.div whileHover={{ y: -3 }} className={navIcon}>
                 <div className="relative">
@@ -211,13 +216,14 @@ export default function Navbar() {
                     </span>
                   </a>
 
-                  <a
-                    href="/profile"
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenu(false)}
                     className="flex items-center gap-4 px-6 py-4 text-white hover:bg-yellow-500 hover:text-black transition-all duration-300"
                   >
                     <FiUser size={22} />
                     Profile
-                  </a>
+                  </Link>
 
                   <a
                     href="/cart"

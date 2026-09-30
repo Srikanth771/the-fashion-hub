@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import { Link } from "react-router-dom";
 import { Heart, ArrowLeft, ArrowRight, Star, ShoppingCart } from "lucide-react";
 
 const trendingProducts = [
@@ -220,93 +221,96 @@ const TrendingNow = () => {
   "
 >
               {/* ================= IMAGE ================= */}
-              <div
-                className="
-                  relative
-                  h-[180px]
-                  w-full
-                  overflow-hidden
-                  bg-[#f6d19d]
-
-                  sm:h-[220px]
-                  md:h-[230px]
-                  lg:h-[240px]
-                "
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                  className="
-                    h-full
-                    w-full
-                    object-cover
-                    transition-transform
-                    duration-700
-                    ease-out
-                    group-hover:scale-105
-                  "
-                />
-
-                {/* DISCOUNT */}
+              <Link to={`/product/${product.id}`} className="block">
                 <div
                   className="
-                    absolute
-                    left-2
-                    top-2
-                    bg-[#d6b63d]
-                    px-2
-                    py-1
-                    text-[7px]
-                    font-medium
-                    tracking-wider
-                    text-black
+                    relative
+                    h-[180px]
+                    w-full
+                    overflow-hidden
+                    bg-[#f6d19d]
 
-                    sm:left-2.5
-                    sm:top-2.5
-                    sm:text-[8px]
-
-                    md:text-[9px]
+                    sm:h-[220px]
+                    md:h-[230px]
+                    lg:h-[240px]
                   "
                 >
-                  {product.discount}
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
+                    className="
+                      h-full
+                      w-full
+                      object-cover
+                      transition-transform
+                      duration-700
+                      ease-out
+                      group-hover:scale-105
+                    "
+                  />
+
+                  {/* DISCOUNT */}
+                  <div
+                    className="
+                      absolute
+                      left-2
+                      top-2
+                      bg-[#d6b63d]
+                      px-2
+                      py-1
+                      text-[7px]
+                      font-medium
+                      tracking-wider
+                      text-black
+
+                      sm:left-2.5
+                      sm:top-2.5
+                      sm:text-[8px]
+
+                      md:text-[9px]
+                    "
+                  >
+                    {product.discount}
+                  </div>
+
+                  {/* WISHLIST */}
+                  <button
+                    type="button"
+                    aria-label={`Add ${product.name} to wishlist`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleWishlist(product);
+                    }}
+                    className="
+                      absolute
+                      right-2
+                      top-2
+                      flex
+                      h-7
+                      w-7
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-white
+                      text-[#333]
+                      shadow
+                      transition-all
+                      duration-300
+                      hover:scale-110
+                      hover:text-red-500
+
+                      sm:right-2.5
+                      sm:top-2.5
+                      sm:h-8
+                      sm:w-8
+                    "
+                  >
+                    <Heart size={14} strokeWidth={1.5} />
+                  </button>
                 </div>
-
-                {/* WISHLIST */}
-                <button
-                  type="button"
-                  aria-label={`Add ${product.name} to wishlist`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWishlist(product);
-                  }}
-                  className="
-                    absolute
-                    right-2
-                    top-2
-                    flex
-                    h-7
-                    w-7
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-white
-                    text-[#333]
-                    shadow
-                    transition-all
-                    duration-300
-                    hover:scale-110
-                    hover:text-red-500
-
-                    sm:right-2.5
-                    sm:top-2.5
-                    sm:h-8
-                    sm:w-8
-                  "
-                >
-                  <Heart size={14} strokeWidth={1.5} />
-                </button>
-              </div>
+              </Link>
 
               {/* ================= PRODUCT DETAILS ================= */}
               <div className="flex flex-1 flex-col bg-white px-2.5 py-2.5 sm:px-3 sm:py-3">
@@ -316,9 +320,11 @@ const TrendingNow = () => {
                 </p>
 
                 {/* NAME */}
-                <h3 className="mt-1 line-clamp-1 text-[10px] font-medium leading-snug text-[#161616] transition-colors duration-300 group-hover:text-[#13233f] sm:text-[11px] md:text-[12px]">
-                  {product.name}
-                </h3>
+                <Link to={`/product/${product.id}`} className="block">
+                  <h3 className="mt-1 line-clamp-1 text-[10px] font-medium leading-snug text-[#161616] transition-colors duration-300 group-hover:text-[#13233f] sm:text-[11px] md:text-[12px]">
+                    {product.name}
+                  </h3>
+                </Link>
 
                 {/* PRICE */}
                 <div className="mt-1.5 flex items-center gap-1.5">

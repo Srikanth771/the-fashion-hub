@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Link } from "react-router-dom";
 import { Heart, ArrowRight, Star, ShoppingCart } from "lucide-react";
 
 const bestSellers = [
@@ -281,20 +282,22 @@ const BestSellers = () => {
                 "
               >
                 {/* PRODUCT IMAGE */}
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                  className="
-                    h-full
-                    w-full
-                    object-cover
-                    transition-transform
-                    duration-700
-                    ease-out
-                    group-hover:scale-[1.05]
-                  "
-                />
+                <Link to={`/product/${product.id}`}>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
+                    className="
+                      h-full
+                      w-full
+                      object-cover
+                      transition-transform
+                      duration-700
+                      ease-out
+                      group-hover:scale-[1.05]
+                    "
+                  />
+                </Link>
 
                 {/* =========================
                     DISCOUNT
@@ -422,26 +425,28 @@ const BestSellers = () => {
                 </p>
 
                 {/* PRODUCT NAME */}
-                <h3
-                  className="
-                    mt-1.5
-                    line-clamp-1
-                    cursor-pointer
-                    text-[11px]
-                    font-medium
-                    leading-snug
-                    text-[#161616]
-                    transition-colors
-                    duration-300
-                    group-hover:text-[#13233f]
-                    hover:underline
-                    sm:mt-2
-                    sm:text-[13px]
-                    md:text-[14px]
-                  "
-                >
-                  {product.name}
-                </h3>
+                <Link to={`/product/${product.id}`}>
+                  <h3
+                    className="
+                      mt-1.5
+                      line-clamp-1
+                      cursor-pointer
+                      text-[11px]
+                      font-medium
+                      leading-snug
+                      text-[#161616]
+                      transition-colors
+                      duration-300
+                      group-hover:text-[#13233f]
+                      hover:underline
+                      sm:mt-2
+                      sm:text-[13px]
+                      md:text-[14px]
+                    "
+                  >
+                    {product.name}
+                  </h3>
+                </Link>
 
                 {/* PRICE */}
                 <div

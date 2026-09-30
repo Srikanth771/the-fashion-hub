@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Menu, ChevronDown, ChevronRight } from "lucide-react";
 import categories from "../data/categoryData";
 
@@ -129,19 +130,25 @@ export default function Category() {
 
       <div className="grid grid-cols-2 gap-x-16 gap-y-4">
         {activeCategory.items.map((item, index) => (
-          <button
+          <Link
             key={index}
-            className="text-left text-[15px] text-gray-700 hover:text-yellow-600 hover:translate-x-1 transition-all duration-300 cursor-pointer"
+            to={`/category/${encodeURIComponent(item)}`}
+            onClick={() => setOpen(false)}
+            className="text-left text-[15px] text-gray-700 hover:text-yellow-600 hover:translate-x-1 transition-all duration-300 cursor-pointer block"
           >
             {item}
-          </button>
+          </Link>
         ))}
       </div>
 
       <div className="flex justify-end mt-8">
-        <button className="bg-yellow-500 hover:bg-yellow-400 px-5 py-2 rounded-lg font-semibold">
+        <Link
+          to={`/category/${encodeURIComponent(activeCategory.name)}`}
+          onClick={() => setOpen(false)}
+          className="bg-yellow-500 hover:bg-yellow-400 px-5 py-2 rounded-lg font-semibold text-black transition block"
+        >
           View All →
-        </button>
+        </Link>
       </div>
     </div>
   </div>
@@ -151,35 +158,35 @@ export default function Category() {
 
         {/* ================= Navigation ================= */}
 
-        <nav className="hidden lg:flex flex-1 justify-center items-center gap-12 h-14 text-white font-medium">
+        <nav className="hidden lg:flex flex-1 justify-center items-center gap-12 h-14 text-white font-medium text-sm">
 
-          <a href="/" className="hover:text-yellow-400 transition">
+          <Link to="/" className="hover:text-yellow-400 transition font-medium">
             Home
-          </a>
+          </Link>
 
-          <a href="/trending" className="hover:text-yellow-400 transition">
+          <Link to="/trending" className="hover:text-yellow-400 transition font-medium">
             Trending
-          </a>
+          </Link>
 
-          <a href="/flash-deals" className="hover:text-yellow-400 transition">
+          <Link to="/flash-deals" className="hover:text-yellow-400 transition font-medium">
             Flash Deals
-          </a>
+          </Link>
 
-          <a href="/new-arrivals" className="hover:text-yellow-400 transition">
+          <Link to="/new-arrivals" className="hover:text-yellow-400 transition font-medium">
             New Arrivals
-          </a>
+          </Link>
 
-          <a href="/products" className="hover:text-yellow-400 transition">
+          <Link to="/products" className="hover:text-yellow-400 transition font-medium">
             All Products
-          </a>
+          </Link>
 
-          <a href="/about" className="hover:text-yellow-400 transition">
+          <Link to="/about" className="hover:text-yellow-400 transition font-medium">
             About Us
-          </a>
+          </Link>
 
-          <a href="/contact" className="hover:text-yellow-400 transition">
+          <Link to="/contact" className="hover:text-yellow-400 transition font-medium">
             Contact Us
-          </a>
+          </Link>
 
         </nav>
 

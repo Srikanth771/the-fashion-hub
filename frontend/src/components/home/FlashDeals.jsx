@@ -1,120 +1,612 @@
 "use client";
 
-import React from "react";
-import { ArrowRight, Tag, Copy, Sparkles } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ArrowRight, Zap, ShoppingBag } from "lucide-react";
 
 const FlashDeals = () => {
-  const copyCoupon = async () => {
-    try {
-      await navigator.clipboard.writeText("FASHION20");
-    } catch (error) {
-      console.log("Unable to copy coupon");
-    }
+  const [timeLeft, setTimeLeft] = useState({
+    days: 2,
+    hours: 14,
+    minutes: 36,
+    seconds: 48,
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        let { days, hours, minutes, seconds } = prev;
+
+        if (seconds > 0) {
+          seconds--;
+        } else {
+          seconds = 59;
+
+          if (minutes > 0) {
+            minutes--;
+          } else {
+            minutes = 59;
+
+            if (hours > 0) {
+              hours--;
+            } else {
+              hours = 23;
+
+              if (days > 0) {
+                days--;
+              }
+            }
+          }
+        }
+
+        return {
+          days,
+          hours,
+          minutes,
+          seconds,
+        };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatNumber = (number) => {
+    return String(number).padStart(2, "0");
   };
 
   return (
-    <section className="w-full bg-[#13233f]">
-      <div className="mx-auto flex min-h-[210px] w-full max-w-[1400px] items-center px-4 py-8 sm:min-h-[230px] sm:px-6 sm:py-10 lg:min-h-[250px] lg:px-8 lg:py-12">
+    <section className="w-full bg-[#f7f7f7] px-3 py-4 sm:px-5 sm:py-5 lg:px-7 lg:py-6">
+      <div
+        className="
+          relative mx-auto
+          min-h-[360px]
+          w-full
+          max-w-[1480px]
+          overflow-hidden
+          rounded-xl
+          bg-[#061a2d]
+          shadow-[0_8px_30px_rgba(0,0,0,0.12)]
+          sm:min-h-[390px]
+          lg:min-h-[420px]
+        "
+      >
+        {/* =====================================================
+            BACKGROUND DECORATIONS
+        ====================================================== */}
 
-        <div className="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-[1fr_auto] md:gap-10 lg:gap-16">
+        {/* Lightning glow */}
+        <div className="pointer-events-none absolute -left-20 top-10 h-56 w-56 rounded-full bg-[#e7ad3d]/10 blur-3xl" />
 
-          {/* ================= LEFT CONTENT ================= */}
-          <div className="flex items-start gap-4 sm:gap-5">
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-[45%] bg-[radial-gradient(circle_at_center,rgba(231,173,61,0.13),transparent_65%)]" />
 
-            {/* ICON */}
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center border border-[#c79816] bg-[#c79816] sm:h-14 sm:w-14 lg:h-16 lg:w-16">
-              <Tag
-                size={22}
-                strokeWidth={1.7}
-                className="text-[#13233f] sm:h-6 sm:w-6 lg:h-7 lg:w-7"
-              />
-            </div>
+        {/* Small floating particles */}
+        <div className="absolute left-[8%] top-[20%] h-2 w-2 rotate-45 bg-[#e7ad3d] opacity-80" />
+        <div className="absolute left-[35%] top-[13%] h-2 w-2 rotate-45 bg-[#e7ad3d] opacity-70" />
+        <div className="absolute left-[38%] bottom-[15%] h-3 w-3 rotate-45 bg-[#e7ad3d] opacity-60" />
+        <div className="absolute right-[8%] bottom-[18%] h-2 w-2 rotate-45 bg-[#e7ad3d] opacity-70" />
 
-            {/* TEXT */}
-            <div className="min-w-0">
+        {/* Lightning lines */}
+        <div className="pointer-events-none absolute right-[3%] top-[-20px] h-[280px] w-[250px] opacity-30">
+          <svg
+            viewBox="0 0 250 280"
+            className="h-full w-full"
+            fill="none"
+          >
+            <path
+              d="M180 0L130 70L155 70L95 150L125 150L55 280"
+              stroke="#d8e8ff"
+              strokeWidth="1.5"
+            />
 
-              {/* LABEL */}
-              <div className="mb-2 flex items-center gap-2">
-                <Sparkles
-                  size={12}
-                  className="text-[#c79816]"
-                  strokeWidth={1.8}
+            <path
+              d="M230 40L190 100L210 100L160 160"
+              stroke="#d8e8ff"
+              strokeWidth="1"
+            />
+          </svg>
+        </div>
+
+        {/* =====================================================
+            MAIN CONTENT
+        ====================================================== */}
+
+        <div className="relative z-10 flex min-h-[360px] flex-col lg:min-h-[420px] lg:flex-row">
+
+          {/* =================================================
+              LEFT SIDE
+          ================================================== */}
+
+          <div
+            className="
+              flex
+              w-full
+              flex-col
+              justify-center
+              px-6
+              py-10
+              sm:px-10
+              lg:w-[53%]
+              lg:px-14
+              lg:py-12
+              xl:px-20
+            "
+          >
+            {/* FLASH DEALS LABEL */}
+
+            <div className="mb-4 flex items-center gap-3 sm:mb-5">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#e7ad3d] sm:h-8 sm:w-8">
+                <Zap
+                  size={18}
+                  fill="currentColor"
+                  className="text-[#061a2d]"
                 />
-
-                <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c79816] sm:text-[10px]">
-                  Special Offer
-                </span>
               </div>
 
-              {/* HEADING */}
-              <h2 className="text-[25px] font-semibold leading-tight tracking-[-0.02em] text-white sm:text-[31px] md:text-[34px] lg:text-[40px]">
-                Flat 20% Off
-              </h2>
+              <span
+                className="
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-[0.28em]
+                  text-[#e7ad3d]
+                  sm:text-xs
+                "
+              >
+                Limited Time Offer
+              </span>
+            </div>
 
-              {/* DESCRIPTION */}
-              <p className="mt-2 max-w-[620px] text-[11px] leading-relaxed text-white/65 sm:text-[12px] md:text-[13px]">
-                Enjoy an exclusive discount on your next order.
-                Shop your favorite styles and save more.
-              </p>
+            {/* HEADING */}
 
-              {/* CONDITIONS */}
-              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] text-white/50 sm:text-[10px]">
-                <span>Orders above ₹999</span>
+            <h1
+              className="
+                max-w-[580px]
+                text-5xl
+                font-black
+                uppercase
+                leading-[0.88]
+                tracking-[-0.04em]
+                text-white
+                sm:text-6xl
+                md:text-7xl
+                lg:text-[76px]
+                xl:text-[86px]
+              "
+            >
+              <span className="block">Flash</span>
 
-                <span className="hidden h-1 w-1 rounded-full bg-[#c79816] sm:block" />
+              <span className="block text-[#e7ad3d]">
+                Deals
+              </span>
+            </h1>
 
-                <span>Max discount ₹500</span>
+            {/* DESCRIPTION */}
 
-                <span className="hidden h-1 w-1 rounded-full bg-[#c79816] sm:block" />
+            <p
+              className="
+                mt-4
+                max-w-[470px]
+                text-xs
+                leading-relaxed
+                text-white/65
+                sm:mt-5
+                sm:text-sm
+              "
+            >
+              Grab incredible deals on our best-selling products.
+              Hurry, these offers won't last forever!
+            </p>
 
-                <span>Limited period</span>
+            {/* CTA */}
+
+            <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-7">
+              <a
+                href="/products"
+                className="
+                  group
+                  inline-flex
+                  min-h-[46px]
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-md
+                  bg-[#e7ad3d]
+                  px-6
+                  text-xs
+                  font-bold
+                  uppercase
+                  tracking-[0.08em]
+                  text-[#061a2d]
+                  transition-all
+                  duration-300
+                  hover:bg-white
+                  hover:shadow-[0_8px_25px_rgba(231,173,61,0.25)]
+                  sm:min-h-[50px]
+                  sm:px-8
+                "
+              >
+                <span>Shop Now</span>
+
+                <ArrowRight
+                  size={16}
+                  className="
+                    transition-transform
+                    duration-300
+                    group-hover:translate-x-1
+                  "
+                />
+              </a>
+
+              <div className="flex items-center gap-2 text-[10px] text-white/50 sm:text-xs">
+                <ShoppingBag size={15} />
+
+                <span>Best prices guaranteed</span>
               </div>
             </div>
           </div>
 
-          {/* ================= RIGHT CONTENT ================= */}
-          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center md:flex-col md:items-end lg:flex-row lg:items-center">
+          {/* =================================================
+              CENTER OFFER
+          ================================================== */}
 
-            {/* COUPON */}
-            <div className="flex items-center gap-3">
+          <div
+            className="
+              relative
+              z-20
+              flex
+              w-full
+              flex-col
+              items-center
+              justify-center
+              px-5
+              pb-10
+              lg:w-[25%]
+              lg:px-0
+              lg:pb-0
+            "
+          >
+            {/* UP TO */}
 
-              <div className="border border-dashed border-[#c79816] bg-[#182b4b] px-4 py-3 sm:px-5 sm:py-3.5">
-                <p className="mb-1 text-[7px] font-medium uppercase tracking-[0.2em] text-white/45">
-                  Use coupon
-                </p>
+            <span
+              className="
+                text-[11px]
+                font-bold
+                uppercase
+                tracking-[0.18em]
+                text-white
+                sm:text-sm
+              "
+            >
+              Up To
+            </span>
 
-                <span className="text-[14px] font-bold tracking-[0.16em] text-[#c79816] sm:text-[16px]">
-                  FASHION20
-                </span>
-              </div>
+            {/* 70% */}
 
-              <button
-                type="button"
-                onClick={copyCoupon}
-                aria-label="Copy coupon code"
-                className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/10 text-white transition-all duration-300 hover:border-[#c79816] hover:bg-[#c79816] hover:text-[#13233f] active:scale-95 sm:h-11 sm:w-11"
+            <div className="mt-1 flex items-baseline">
+              <span
+                className="
+                  text-6xl
+                  font-black
+                  leading-none
+                  tracking-[-0.05em]
+                  text-[#f0b943]
+                  sm:text-7xl
+                  lg:text-[82px]
+                "
               >
-                <Copy size={15} strokeWidth={1.7} />
-              </button>
+                70
+              </span>
+
+              <span
+                className="
+                  text-3xl
+                  font-black
+                  text-[#f0b943]
+                  sm:text-4xl
+                  lg:text-5xl
+                "
+              >
+                %
+              </span>
             </div>
 
-            {/* CTA */}
-            <a
-              href="/products"
-              className="group flex min-h-[45px] items-center justify-center gap-2 bg-[#c79816] px-5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#13233f] transition-all duration-300 hover:bg-white hover:shadow-lg active:scale-[0.98] sm:min-h-[48px] sm:px-6"
+            <span
+              className="
+                mt-[-3px]
+                text-sm
+                font-bold
+                uppercase
+                tracking-[0.16em]
+                text-white
+                sm:text-base
+              "
             >
-              <span>Grab the Deal</span>
+              Off
+            </span>
 
-              <ArrowRight
-                size={15}
-                strokeWidth={1.8}
-                className="transition-transform duration-300 group-hover:translate-x-1"
+            {/* SUBTEXT */}
+
+            <p className="mt-2 text-center text-[10px] text-white/55 sm:text-xs">
+              On Best Selling Products
+            </p>
+
+            {/* =================================================
+                COUNTDOWN
+            ================================================== */}
+
+            <div className="mt-5 flex items-center gap-1.5 sm:gap-2">
+              <CountdownBox
+                value={formatNumber(timeLeft.days)}
+                label="Days"
               />
-            </a>
+
+              <CountdownBox
+                value={formatNumber(timeLeft.hours)}
+                label="Hrs"
+              />
+
+              <CountdownBox
+                value={formatNumber(timeLeft.minutes)}
+                label="Mins"
+              />
+
+              <CountdownBox
+                value={formatNumber(timeLeft.seconds)}
+                label="Secs"
+              />
+            </div>
+          </div>
+
+          {/* =================================================
+              RIGHT PRODUCT SHOWCASE
+          ================================================== */}
+
+          <div
+            className="
+              relative
+              hidden
+              w-[30%]
+              items-center
+              justify-center
+              lg:flex
+            "
+          >
+            {/* GOLD PLATFORM */}
+
+            <div
+              className="
+                absolute
+                bottom-[72px]
+                left-[50%]
+                h-[70px]
+                w-[370px]
+                -translate-x-1/2
+                rounded-[50%]
+                border
+                border-[#f0c65e]/40
+                bg-[#b88619]
+                shadow-[0_20px_40px_rgba(0,0,0,0.3)]
+              "
+            />
+
+            <div
+              className="
+                absolute
+                bottom-[88px]
+                left-[50%]
+                h-[48px]
+                w-[350px]
+                -translate-x-1/2
+                rounded-[50%]
+                bg-[#e3af37]
+              "
+            />
+
+            {/* PRODUCT 1 - EARBUDS */}
+
+            <div
+              className="
+                absolute
+                bottom-[125px]
+                left-[14%]
+                z-30
+                flex
+                h-[120px]
+                w-[120px]
+                items-center
+                justify-center
+                rounded-2xl
+                bg-white
+                shadow-[0_15px_35px_rgba(0,0,0,0.35)]
+                transition-transform
+                duration-500
+                hover:-translate-y-2
+              "
+            >
+              <div className="relative h-[72px] w-[72px] rounded-[20px] border-2 border-gray-200 bg-gray-50">
+                <div className="absolute left-[18px] top-[14px] h-[30px] w-[14px] rounded-full bg-white shadow-md" />
+                <div className="absolute right-[18px] top-[14px] h-[30px] w-[14px] rounded-full bg-white shadow-md" />
+                <div className="absolute bottom-[8px] left-[24px] right-[24px] h-[4px] rounded-full bg-gray-200" />
+              </div>
+            </div>
+
+            {/* PRODUCT 2 - WATCH */}
+
+            <div
+              className="
+                absolute
+                bottom-[140px]
+                left-[43%]
+                z-40
+                flex
+                h-[145px]
+                w-[105px]
+                items-center
+                justify-center
+                rounded-[24px]
+                bg-[#111820]
+                shadow-[0_18px_40px_rgba(0,0,0,0.45)]
+                transition-transform
+                duration-500
+                hover:-translate-y-2
+              "
+            >
+              {/* Strap */}
+
+              <div className="absolute -top-10 h-[60px] w-[55px] rounded-t-[25px] bg-[#0b1118]" />
+
+              <div className="absolute -bottom-10 h-[60px] w-[55px] rounded-b-[25px] bg-[#0b1118]" />
+
+              {/* Watch screen */}
+
+              <div
+                className="
+                  relative
+                  z-10
+                  flex
+                  h-[90px]
+                  w-[76px]
+                  items-center
+                  justify-center
+                  rounded-[19px]
+                  border-4
+                  border-[#303943]
+                  bg-[#05090e]
+                "
+              >
+                <div className="text-center">
+                  <p className="text-[17px] font-bold text-white">
+                    10:28
+                  </p>
+
+                  <p className="mt-1 text-[7px] text-[#e7ad3d]">
+                    MON 12
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* PRODUCT 3 - SHOES */}
+
+            <div
+              className="
+                absolute
+                bottom-[95px]
+                right-[4%]
+                z-30
+                h-[100px]
+                w-[175px]
+                rotate-[-5deg]
+                rounded-[55%_45%_30%_25%]
+                bg-[#e8f0eb]
+                shadow-[0_18px_35px_rgba(0,0,0,0.35)]
+                transition-transform
+                duration-500
+                hover:-translate-y-2
+              "
+            >
+              <div className="absolute left-[38px] top-[30px] h-1 w-20 rotate-[8deg] bg-gray-300" />
+
+              <div className="absolute left-[45px] top-[40px] h-1 w-16 rotate-[8deg] bg-gray-300" />
+
+              <div className="absolute bottom-[-5px] left-[15px] h-[15px] w-[145px] rounded-full bg-white shadow-sm" />
+            </div>
+
+            {/* BEST PRICE TAG */}
+
+            <div
+              className="
+                absolute
+                bottom-[35px]
+                left-[18%]
+                z-50
+                rotate-[10deg]
+                rounded-sm
+                bg-[#e7ad3d]
+                px-5
+                py-3
+                text-center
+                shadow-lg
+              "
+            >
+              <p className="text-[11px] font-black uppercase leading-tight text-[#061a2d]">
+                Best
+                <br />
+                Prices
+              </p>
+
+              {/* Tag hole */}
+
+              <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-[#061a2d]/30" />
+            </div>
+
+            {/* GOLD LIGHTNING */}
+
+            <Zap
+              size={42}
+              fill="currentColor"
+              className="
+                absolute
+                right-[10%]
+                top-[15%]
+                rotate-[10deg]
+                text-[#e7ad3d]
+              "
+            />
           </div>
         </div>
       </div>
     </section>
+  );
+};
+
+/* =========================================================
+   COUNTDOWN BOX
+========================================================= */
+
+const CountdownBox = ({ value, label }) => {
+  return (
+    <div
+      className="
+        flex
+        h-[48px]
+        w-[48px]
+        flex-col
+        items-center
+        justify-center
+        rounded-md
+        border
+        border-white/10
+        bg-white/[0.07]
+        sm:h-[55px]
+        sm:w-[58px]
+      "
+    >
+      <span
+        className="
+          text-base
+          font-bold
+          leading-none
+          text-white
+          sm:text-lg
+        "
+      >
+        {value}
+      </span>
+
+      <span
+        className="
+          mt-1
+          text-[7px]
+          uppercase
+          tracking-[0.1em]
+          text-white/40
+          sm:text-[8px]
+        "
+      >
+        {label}
+      </span>
+    </div>
   );
 };
 
