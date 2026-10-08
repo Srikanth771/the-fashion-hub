@@ -1,8 +1,15 @@
 "use client";
 
 import React, { useRef } from "react";
-import { Link } from "react-router-dom";
-import { Heart, ArrowLeft, ArrowRight, Star, ShoppingCart } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+
+import {
+  Heart,
+  ArrowLeft,
+  ArrowRight,
+  Star,
+  ShoppingCart,
+} from "lucide-react";
 
 const trendingProducts = [
   {
@@ -106,10 +113,17 @@ const trendingProducts = [
 const TrendingNow = () => {
   const sliderRef = useRef(null);
 
+  const navigate = useNavigate();
+
+  // =========================
+  // SLIDER
+  // =========================
+
   const scrollSlider = (direction) => {
     if (!sliderRef.current) return;
 
     const slider = sliderRef.current;
+
     const card = slider.querySelector("[data-card]");
 
     if (!card) return;
@@ -117,6 +131,7 @@ const TrendingNow = () => {
     const cardWidth = card.offsetWidth;
 
     const styles = window.getComputedStyle(slider);
+
     const gap = parseFloat(styles.columnGap || styles.gap || 0);
 
     const scrollAmount = cardWidth + gap;
@@ -127,9 +142,58 @@ const TrendingNow = () => {
     });
   };
 
+  // =========================
+  // ADD TO CART
+  // =========================
+
   const handleAddToCart = (product) => {
-    console.log("Added to cart:", product);
+    try {
+      const existingCart =
+        JSON.parse(localStorage.getItem("fashionHubCart")) || [];
+
+      const existingItem = existingCart.find(
+        (item) => item.id === product.id
+      );
+
+      let updatedCart;
+
+      if (existingItem) {
+        updatedCart = existingCart.map((item) =>
+          item.id === product.id
+            ? {
+                ...item,
+                quantity: (item.quantity || 1) + 1,
+              }
+            : item
+        );
+      } else {
+        updatedCart = [
+          ...existingCart,
+          {
+            ...product,
+            quantity: 1,
+          },
+        ];
+      }
+
+      localStorage.setItem(
+        "fashionHubCart",
+        JSON.stringify(updatedCart)
+      );
+
+      // Tell Navbar to update cart count
+      window.dispatchEvent(new Event("cartUpdated"));
+
+      // Go to cart page
+      navigate("/cart");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+    }
   };
+
+  // =========================
+  // WISHLIST
+  // =========================
 
   const handleWishlist = (product) => {
     console.log("Wishlist:", product);
@@ -138,7 +202,9 @@ const TrendingNow = () => {
   return (
     <section className="w-full bg-[#fffaf0] py-8 sm:py-2 md:py-3">
       <div className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
+
         {/* ================= HEADER ================= */}
+
         <div className="mb-6 flex items-end justify-between sm:mb-7 md:mb-8">
           <div>
             <p className="mb-1.5 text-[9px] font-medium uppercase tracking-[0.3em] text-[#242424] sm:text-[10px]">
@@ -151,22 +217,25 @@ const TrendingNow = () => {
           </div>
 
           {/* DESKTOP VIEW ALL */}
+
           <div className="hidden items-center sm:flex">
-            <a
-              href="/trending"
+            <Link
+              to="/trending"
               className="group flex items-center gap-1.5 text-[11px] font-medium text-[#13233f] transition-all duration-300 hover:text-[#c79816] md:text-[12px]"
             >
               View all
+
               <ArrowRight
                 size={15}
                 strokeWidth={1.6}
                 className="transition-transform duration-300 group-hover:translate-x-1"
               />
-            </a>
+            </Link>
           </div>
         </div>
 
         {/* ================= PRODUCT SLIDER ================= */}
+
         <div
           ref={sliderRef}
           className="
@@ -186,42 +255,42 @@ const TrendingNow = () => {
         >
           {trendingProducts.map((product) => (
             <article
-  key={product.id}
-  data-card
-  className="
-    group
-    relative
-    flex
-    min-w-[calc(50%-6px)]
-    max-w-[calc(50%-6px)]
-    flex-shrink-0
-    flex-col
-    overflow-hidden
-    rounded-2xl
-    border
-    border-[#e5e7eb]
-    bg-white
-    shadow-sm
-    transition-all
-    duration-500
-    hover:-translate-y-1
-    hover:shadow-lg
-
-    sm:min-w-[220px]
-    sm:max-w-[220px]
-
-    md:min-w-[235px]
-    md:max-w-[235px]
-
-    lg:min-w-[245px]
-    lg:max-w-[245px]
-
-    xl:min-w-[250px]
-    xl:max-w-[250px]
-  "
->
+              key={product.id}
+              data-card
+              className="
+                group
+                relative
+                flex
+                min-w-[calc(50%-6px)]
+                max-w-[calc(50%-6px)]
+                flex-shrink-0
+                flex-col
+                overflow-hidden
+                rounded-2xl
+                border
+                border-[#e5e7eb]
+                bg-white
+                shadow-sm
+                transition-all
+                duration-500
+                hover:-translate-y-1
+                hover:shadow-lg
+                sm:min-w-[220px]
+                sm:max-w-[220px]
+                md:min-w-[235px]
+                md:max-w-[235px]
+                lg:min-w-[245px]
+                lg:max-w-[245px]
+                xl:min-w-[250px]
+                xl:max-w-[250px]
+              "
+            >
               {/* ================= IMAGE ================= */}
-              <Link to={`/product/${product.id}`} className="block">
+
+              <Link
+                to={`/product/${product.id}`}
+                className="block"
+              >
                 <div
                   className="
                     relative
@@ -229,7 +298,6 @@ const TrendingNow = () => {
                     w-full
                     overflow-hidden
                     bg-[#f6d19d]
-
                     sm:h-[220px]
                     md:h-[230px]
                     lg:h-[240px]
@@ -251,6 +319,7 @@ const TrendingNow = () => {
                   />
 
                   {/* DISCOUNT */}
+
                   <div
                     className="
                       absolute
@@ -263,11 +332,9 @@ const TrendingNow = () => {
                       font-medium
                       tracking-wider
                       text-black
-
                       sm:left-2.5
                       sm:top-2.5
                       sm:text-[8px]
-
                       md:text-[9px]
                     "
                   >
@@ -275,6 +342,7 @@ const TrendingNow = () => {
                   </div>
 
                   {/* WISHLIST */}
+
                   <button
                     type="button"
                     aria-label={`Add ${product.name} to wishlist`}
@@ -300,33 +368,43 @@ const TrendingNow = () => {
                       duration-300
                       hover:scale-110
                       hover:text-red-500
-
                       sm:right-2.5
                       sm:top-2.5
                       sm:h-8
                       sm:w-8
                     "
                   >
-                    <Heart size={14} strokeWidth={1.5} />
+                    <Heart
+                      size={14}
+                      strokeWidth={1.5}
+                    />
                   </button>
                 </div>
               </Link>
 
               {/* ================= PRODUCT DETAILS ================= */}
+
               <div className="flex flex-1 flex-col bg-white px-2.5 py-2.5 sm:px-3 sm:py-3">
+
                 {/* BRAND */}
+
                 <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-[#555] sm:text-[8px] md:text-[9px]">
                   {product.brand}
                 </p>
 
                 {/* NAME */}
-                <Link to={`/product/${product.id}`} className="block">
+
+                <Link
+                  to={`/product/${product.id}`}
+                  className="block"
+                >
                   <h3 className="mt-1 line-clamp-1 text-[10px] font-medium leading-snug text-[#161616] transition-colors duration-300 group-hover:text-[#13233f] sm:text-[11px] md:text-[12px]">
                     {product.name}
                   </h3>
                 </Link>
 
                 {/* PRICE */}
+
                 <div className="mt-1.5 flex items-center gap-1.5">
                   <span className="text-[10px] font-semibold text-[#c79816] sm:text-[11px] md:text-[12px]">
                     {product.price}
@@ -338,6 +416,7 @@ const TrendingNow = () => {
                 </div>
 
                 {/* RATING */}
+
                 <div className="mt-1.5 flex items-center gap-1">
                   <Star
                     size={10}
@@ -350,17 +429,21 @@ const TrendingNow = () => {
                     {product.rating}
                   </span>
 
-                  <span className="text-[8px] text-gray-400">·</span>
+                  <span className="text-[8px] text-gray-400">
+                    ·
+                  </span>
 
                   <span className="text-[8px] text-gray-500 sm:text-[9px]">
                     {product.reviews} reviews
                   </span>
                 </div>
 
-                {/* ADD TO CART */}
+                {/* ================= ADD TO CART ================= */}
+
                 <button
                   type="button"
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     handleAddToCart(product);
                   }}
@@ -384,12 +467,16 @@ const TrendingNow = () => {
                     hover:text-black
                     hover:shadow-md
                     active:scale-[0.98]
-
                     sm:py-2.5
                     sm:text-[9px]
+                    cursor-pointer
                   "
                 >
-                  <ShoppingCart size={12} strokeWidth={1.7} />
+                  <ShoppingCart
+                    size={12}
+                    strokeWidth={1.7}
+                  />
+
                   Add to Cart
                 </button>
               </div>
@@ -398,10 +485,13 @@ const TrendingNow = () => {
         </div>
 
         {/* ================= BOTTOM CONTROLS ================= */}
+
         <div className="mt-4 flex items-center justify-between">
-          {/* MOBILE VIEW ALL */}
-          {/* <a
-            href="/products"
+
+          {/* VIEW ALL */}
+
+          <Link
+            to="/products"
             className="
               flex
               items-center
@@ -411,7 +501,6 @@ const TrendingNow = () => {
               text-[#13233f]
               transition-colors
               hover:text-[#c79816]
-
               sm:text-[11px]
             "
           >
@@ -421,11 +510,11 @@ const TrendingNow = () => {
               size={14}
               strokeWidth={1.6}
             />
-          </a> */}
+          </Link>
 
           {/* ARROWS */}
-          {/* <div className="flex items-center gap-1.5">
 
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => scrollSlider("left")}
@@ -445,7 +534,6 @@ const TrendingNow = () => {
                 hover:bg-[#13233f]
                 hover:text-white
                 active:scale-95
-
                 sm:h-9
                 sm:w-9
               "
@@ -475,7 +563,6 @@ const TrendingNow = () => {
                 hover:bg-[#13233f]
                 hover:text-white
                 active:scale-95
-
                 sm:h-9
                 sm:w-9
               "
@@ -485,17 +572,19 @@ const TrendingNow = () => {
                 strokeWidth={1.6}
               />
             </button>
-
-          </div> */}
+          </div>
         </div>
       </div>
 
-      {/* HIDE SCROLLBAR */}
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+      {/* ================= HIDE SCROLLBAR ================= */}
+
+      <style>
+        {`
+          div::-webkit-scrollbar {
+            display: none;
+          }
+        `}
+      </style>
     </section>
   );
 };

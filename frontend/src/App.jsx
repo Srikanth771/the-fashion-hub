@@ -14,6 +14,8 @@ import ContactUsPage from "./pages/ContactUsPage";
 import CategoryProductsPage from "./pages/CategoryProductsPage";
 import ScrollToTop from "./components/common/ScrollToTop";
 import ForgotPassword from "./pages/ForgotPassword";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
+          <Route path="/cart" element={<Cart/>}/>
+          <Route path="/checkout" element={<Checkout/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,8 +1,13 @@
 "use client";
 
 import React from "react";
-import { Link } from "react-router-dom";
-import { Heart, ArrowRight, Star, ShoppingCart } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Heart,
+  ArrowRight,
+  Star,
+  ShoppingCart,
+} from "lucide-react";
 
 const bestSellers = [
   {
@@ -138,20 +143,64 @@ const bestSellers = [
 ];
 
 const BestSellers = () => {
+  const navigate = useNavigate();
+
   // =========================
   // ADD TO CART
   // =========================
+
   const handleAddToCart = (product) => {
     if (product.outOfStock) return;
 
-    console.log("Added to cart:", product);
+    try {
+      const existingCart =
+        JSON.parse(localStorage.getItem("fashionHubCart")) || [];
 
-    // Connect your Redux/cart logic here later.
+      const existingItem = existingCart.find(
+        (item) => item.id === product.id
+      );
+
+      let updatedCart;
+
+      if (existingItem) {
+        updatedCart = existingCart.map((item) =>
+          item.id === product.id
+            ? {
+                ...item,
+                quantity: (item.quantity || 1) + 1,
+              }
+            : item
+        );
+      } else {
+        updatedCart = [
+          ...existingCart,
+          {
+            ...product,
+            quantity: 1,
+          },
+        ];
+      }
+
+      // Save cart
+      localStorage.setItem(
+        "fashionHubCart",
+        JSON.stringify(updatedCart)
+      );
+
+      // Tell Navbar to update cart count
+      window.dispatchEvent(new Event("cartUpdated"));
+
+      // Open Cart page
+      navigate("/cart");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+    }
   };
 
   // =========================
   // WISHLIST
   // =========================
+
   const handleWishlist = (product) => {
     console.log("Added to wishlist:", product);
   };
@@ -163,6 +212,7 @@ const BestSellers = () => {
         {/* =========================
             HEADER
         ========================== */}
+
         <div className="mb-7 flex items-end justify-between sm:mb-8 md:mb-10">
           <div>
             <p
@@ -198,8 +248,9 @@ const BestSellers = () => {
           {/* =========================
               DESKTOP VIEW ALL
           ========================== */}
-          <a
-            href="/products"
+
+          <Link
+            to="/products"
             className="
               group
               hidden
@@ -227,13 +278,14 @@ const BestSellers = () => {
                 group-hover:translate-x-1
               "
             />
-          </a>
+          </Link>
         </div>
 
         {/* =========================
             PRODUCT GRID
             5 COLUMNS × 2 ROWS
         ========================== */}
+
         <div
           className="
             grid
@@ -266,9 +318,11 @@ const BestSellers = () => {
                 hover:shadow-[0_12px_30px_rgba(0,0,0,0.12)]
               "
             >
+
               {/* =========================
                   IMAGE
               ========================== */}
+
               <div
                 className="
                   relative
@@ -281,7 +335,9 @@ const BestSellers = () => {
                   xl:h-[245px]
                 "
               >
+
                 {/* PRODUCT IMAGE */}
+
                 <Link to={`/product/${product.id}`}>
                   <img
                     src={product.image}
@@ -302,6 +358,7 @@ const BestSellers = () => {
                 {/* =========================
                     DISCOUNT
                 ========================== */}
+
                 {product.discount && (
                   <div
                     className="
@@ -332,10 +389,12 @@ const BestSellers = () => {
                 {/* =========================
                     HEART / WISHLIST
                 ========================== */}
+
                 <button
                   type="button"
                   aria-label={`Add ${product.name} to wishlist`}
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     handleWishlist(product);
                   }}
@@ -379,6 +438,7 @@ const BestSellers = () => {
                 {/* =========================
                     OUT OF STOCK
                 ========================== */}
+
                 {product.outOfStock && (
                   <div
                     className="
@@ -407,9 +467,11 @@ const BestSellers = () => {
               {/* =========================
                   PRODUCT DETAILS
               ========================== */}
+
               <div className="bg-white px-3 py-3 sm:px-4 sm:py-4">
 
                 {/* BRAND */}
+
                 <p
                   className="
                     text-[8px]
@@ -425,6 +487,7 @@ const BestSellers = () => {
                 </p>
 
                 {/* PRODUCT NAME */}
+
                 <Link to={`/product/${product.id}`}>
                   <h3
                     className="
@@ -448,7 +511,10 @@ const BestSellers = () => {
                   </h3>
                 </Link>
 
-                {/* PRICE */}
+                {/* =========================
+                    PRICE
+                ========================== */}
+
                 <div
                   className="
                     mt-1.5
@@ -484,7 +550,10 @@ const BestSellers = () => {
                   </span>
                 </div>
 
-                {/* RATING */}
+                {/* =========================
+                    RATING
+                ========================== */}
+
                 <div
                   className="
                     mt-1.5
@@ -515,11 +584,15 @@ const BestSellers = () => {
                   </span>
                 </div>
 
-                {/* ADD TO CART */}
+                {/* =========================
+                    ADD TO CART
+                ========================== */}
+
                 <button
                   type="button"
                   disabled={product.outOfStock}
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     handleAddToCart(product);
                   }}
@@ -541,6 +614,7 @@ const BestSellers = () => {
                     sm:py-3
                     sm:text-[10px]
                     md:text-[11px]
+                    cursor-pointer
 
                     ${
                       product.outOfStock
@@ -584,9 +658,10 @@ const BestSellers = () => {
         {/* =========================
             MOBILE VIEW ALL
         ========================== */}
+
         <div className="mt-6 flex justify-end sm:hidden">
-          <a
-            href="/products"
+          <Link
+            to="/products"
             className="
               group
               flex
@@ -612,7 +687,7 @@ const BestSellers = () => {
                 group-hover:translate-x-1
               "
             />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

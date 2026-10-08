@@ -356,13 +356,14 @@ const ProductDetails = () => {
 
               {/* Action Buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <button
+                <Link
+                 to={"/cart"}
                   onClick={handleAddToCart}
                   className="h-12 rounded-xl bg-[#0B2341] hover:bg-[#06172e] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                 >
                   <ShoppingCart size={18} />
                   ADD TO CART
-                </button>
+                </Link>
 
                 <button
                   onClick={handleBuyNow}

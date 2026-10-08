@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import {
   FiMenu,
   FiX,
@@ -9,10 +10,8 @@ import {
   FiUser,
   FiShoppingCart,
 } from "react-icons/fi";
-import CategoryMenu from "../../pages/Categories";
 
 import { motion, AnimatePresence } from "framer-motion";
-
 import logo from "../../assets/logof.png";
 
 export default function Navbar() {
@@ -27,7 +26,9 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const navIcon =
@@ -41,14 +42,11 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-[1500px] mx-auto">
+          {/* ================= TOP NAVBAR ================= */}
           <div className="flex items-center justify-between px-4 lg:px-8 h-16">
             {/* Logo */}
-
             <Link to="/">
-              <motion.div
-                //   whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-3 cursor-pointer"
-              >
+              <motion.div className="flex items-center gap-3 cursor-pointer">
                 <img
                   src={logo}
                   alt="Fashion Hub"
@@ -58,7 +56,6 @@ export default function Navbar() {
             </Link>
 
             {/* Search */}
-
             <div className="hidden md:flex flex-1 max-w-xl mx-4">
               <div className="relative w-full">
                 <FiSearch
@@ -74,12 +71,8 @@ export default function Navbar() {
                 />
 
                 <motion.button
-                  whileHover={{
-                    scale: 1.05,
-                  }}
-                  whileTap={{
-                    scale: 0.95,
-                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   className="absolute right-1.5 top-1.5 bg-yellow-500 hover:bg-yellow-400 text-black rounded-full px-5 h-8 text-sm font-medium transition"
                 >
                   Search
@@ -88,15 +81,21 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Icons */}
-
             <div className="hidden lg:flex items-center gap-5">
-              <motion.div whileHover={{ y: -3 }} className={navIcon}>
+              {/* Wishlist */}
+              <motion.div
+                whileHover={{ y: -3 }}
+                className={navIcon}
+              >
                 <FiHeart size={20} />
-
                 <span className="text-xs mt-1">Wishlist</span>
               </motion.div>
 
-              <motion.div whileHover={{ y: -3 }} className={navIcon}>
+              {/* Alerts */}
+              <motion.div
+                whileHover={{ y: -3 }}
+                className={navIcon}
+              >
                 <div className="relative">
                   <FiBell size={20} />
 
@@ -108,48 +107,59 @@ export default function Navbar() {
                 <span className="text-xs mt-1">Alerts</span>
               </motion.div>
 
+              {/* Profile */}
               <Link to="/login">
-                <motion.div whileHover={{ y: -3 }} className={navIcon}>
+                <motion.div
+                  whileHover={{ y: -3 }}
+                  className={navIcon}
+                >
                   <FiUser size={20} />
-
                   <span className="text-xs mt-1">Profile</span>
                 </motion.div>
               </Link>
 
-              <motion.div whileHover={{ y: -3 }} className={navIcon}>
-                <div className="relative">
-                  <FiShoppingCart size={20} />
+              {/* ================= CART ================= */}
+              <Link to="/cart">
+                <motion.div
+                  whileHover={{ y: -3 }}
+                  className={navIcon}
+                >
+                  <div className="relative">
+                    <FiShoppingCart size={20} />
 
-                  <motion.span
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 1.8,
-                    }}
-                    className="absolute -top-1 -right-1 bg-yellow-500 text-black text-[9px] rounded-full w-4 h-4 flex items-center justify-center font-bold"
-                  >
-                    2
-                  </motion.span>
-                </div>
+                    <motion.span
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.8,
+                      }}
+                      className="absolute -top-1 -right-1 bg-yellow-500 text-black text-[9px] rounded-full w-4 h-4 flex items-center justify-center font-bold"
+                    >
+                      2
+                    </motion.span>
+                  </div>
 
-                <span className="text-xs mt-1">Cart</span>
-              </motion.div>
+                  <span className="text-xs mt-1">Cart</span>
+                </motion.div>
+              </Link>
             </div>
 
             {/* Mobile Button */}
-
             <button
               onClick={() => setMobileMenu(!mobileMenu)}
               className="lg:hidden text-white"
             >
-              {mobileMenu ? <FiX size={30} /> : <FiMenu size={30} />}
+              {mobileMenu ? (
+                <FiX size={30} />
+              ) : (
+                <FiMenu size={30} />
+              )}
             </button>
           </div>
 
-          {/* Mobile Search */}
-
+          {/* ================= MOBILE SEARCH ================= */}
           <div className="md:hidden px-4 pb-4">
             <div className="relative">
               <FiSearch
@@ -163,8 +173,8 @@ export default function Navbar() {
               />
             </div>
           </div>
-          {/* Mobile Menu */}
 
+          {/* ================= MOBILE MENU ================= */}
           <AnimatePresence>
             {mobileMenu && (
               <motion.div
@@ -174,8 +184,7 @@ export default function Navbar() {
                 transition={{ duration: 0.3 }}
                 className="fixed top-0 right-0 h-screen w-[280px] bg-[#0F172A] shadow-2xl lg:hidden z-50"
               >
-                {/* Header */}
-
+                {/* Mobile Header */}
                 <div className="flex items-center justify-between px-6 h-20 border-b border-gray-700">
                   <img
                     src={logo}
@@ -191,19 +200,22 @@ export default function Navbar() {
                   </button>
                 </div>
 
-                {/* Menu */}
-
+                {/* Mobile Menu Items */}
                 <div className="flex flex-col py-6">
-                  <a
-                    href="/wishlist"
+                  {/* Wishlist */}
+                  <Link
+                    to="/wishlist"
+                    onClick={() => setMobileMenu(false)}
                     className="flex items-center gap-4 px-6 py-4 text-white hover:bg-yellow-500 hover:text-black transition-all duration-300"
                   >
                     <FiHeart size={22} />
                     Wishlist
-                  </a>
+                  </Link>
 
-                  <a
-                    href="/alerts"
+                  {/* Alerts */}
+                  <Link
+                    to="/alerts"
+                    onClick={() => setMobileMenu(false)}
                     className="flex items-center justify-between px-6 py-4 text-white hover:bg-yellow-500 hover:text-black transition-all duration-300"
                   >
                     <div className="flex items-center gap-4">
@@ -214,8 +226,9 @@ export default function Navbar() {
                     <span className="bg-red-500 text-white rounded-full text-xs px-2 py-1">
                       3
                     </span>
-                  </a>
+                  </Link>
 
+                  {/* Profile */}
                   <Link
                     to="/login"
                     onClick={() => setMobileMenu(false)}
@@ -225,8 +238,10 @@ export default function Navbar() {
                     Profile
                   </Link>
 
-                  <a
-                    href="/cart"
+                  {/* ================= MOBILE CART ================= */}
+                  <Link
+                    to="/cart"
+                    onClick={() => setMobileMenu(false)}
                     className="flex items-center justify-between px-6 py-4 text-white hover:bg-yellow-500 hover:text-black transition-all duration-300"
                   >
                     <div className="flex items-center gap-4">
@@ -237,15 +252,18 @@ export default function Navbar() {
                     <span className="bg-yellow-500 text-black rounded-full text-xs px-2 py-1 font-semibold">
                       2
                     </span>
-                  </a>
+                  </Link>
                 </div>
 
-                {/* Footer */}
-
+                {/* Mobile Footer */}
                 <div className="absolute bottom-0 left-0 right-0 border-t border-gray-700 p-6">
-                  <button className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-semibold py-3 rounded-lg transition-all duration-300 hover:scale-105">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenu(false)}
+                    className="block w-full bg-yellow-500 hover:bg-yellow-400 text-black font-semibold py-3 rounded-lg text-center transition-all duration-300 hover:scale-105"
+                  >
                     Login
-                  </button>
+                  </Link>
                 </div>
               </motion.div>
             )}
