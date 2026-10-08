@@ -198,7 +198,7 @@ const NewArrivals = () => {
               DESKTOP VIEW ALL
           ========================== */}
           <a
-            href="/products"
+            href="/new-arrivals"
             className="
               group
               hidden

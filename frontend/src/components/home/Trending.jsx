@@ -153,7 +153,7 @@ const TrendingNow = () => {
           {/* DESKTOP VIEW ALL */}
           <div className="hidden items-center sm:flex">
             <a
-              href="/products"
+              href="/trending"
               className="group flex items-center gap-1.5 text-[11px] font-medium text-[#13233f] transition-all duration-300 hover:text-[#c79816] md:text-[12px]"
             >
               View all

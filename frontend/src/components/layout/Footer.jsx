@@ -24,11 +24,11 @@ const Footer = () => {
 
   const quickLinks = [
     { name: "Home", path: "/" },
-    { name: "Categories", path: "/categories" },
+    { name: "Categories", path: "/products" },
     { name: "Flash Deals", path: "/flash-deals" },
     { name: "Track Order", path: "/trackorder" },
-    { name: "About Us", path: "/aboutus" },
-    { name: "Contact Us", path: "/contactus" },
+    { name: "About Us", path: "/about-us" },
+    { name: "Contact Us", path: "/contact-us" },
   ];
 
   /* =====================================================

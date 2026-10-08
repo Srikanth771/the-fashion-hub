@@ -12,10 +12,15 @@ import AllProductsPage from "./pages/AllProductsPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import ContactUsPage from "./pages/ContactUsPage";
 import CategoryProductsPage from "./pages/CategoryProductsPage";
+import ScrollToTop from "./components/common/ScrollToTop";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   return (
     <BrowserRouter>
+
+        <ScrollToTop />
+
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
@@ -34,6 +39,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path="/forgot-password" element={<ForgotPassword/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

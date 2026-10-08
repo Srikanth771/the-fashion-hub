@@ -7,26 +7,36 @@ const CategoryProductsPage = () => {
 
   const formattedName = categoryName
     ? decodeURIComponent(categoryName)
-    : "Men's Fashion";
+    : "";
+
+  const target = formattedName.toLowerCase();
 
   return (
     <ProductCatalog
-      pageTitle={`Men's ${formattedName}`}
-      breadcrumbTitle={formattedName}
-      badgeText={formattedName}
+      pageTitle={
+        formattedName
+          ? `Men's ${formattedName}`
+          : "Men's Fashion"
+      }
+      breadcrumbTitle={
+        formattedName || "Men's Fashion"
+      }
+      badgeText={
+        formattedName || "Fashion"
+      }
       filterPredicate={(p) => {
-        if (!formattedName) return true;
-        const target = formattedName.toLowerCase();
+        if (!target) return true;
+
         const cat = (p.category || "").toLowerCase();
         const subCat = (p.subCategory || "").toLowerCase();
         const name = (p.name || "").toLowerCase();
 
         return (
-          cat.includes(target) ||
-          subCat.includes(target) ||
-          name.includes(target) ||
-          target.includes(cat) ||
-          target.includes(subCat)
+          (cat && cat.includes(target)) ||
+          (subCat && subCat.includes(target)) ||
+          (name && name.includes(target)) ||
+          (cat && target.includes(cat)) ||
+          (subCat && target.includes(subCat))
         );
       }}
     />

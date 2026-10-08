@@ -1,15 +1,14 @@
 "use client";
 
 import React from "react";
+import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-// import categories from "../../data/categoryData";
 
 import {
   Shirt,
   ShoppingBag,
   Footprints,
   Watch,
-  Circle,
 } from "lucide-react";
 
 const categories = [
@@ -55,7 +54,6 @@ const categories = [
   },
 ];
 
-
 const iconColors = [
   "text-blue-500 bg-blue-50",
   "text-purple-500 bg-purple-50",
@@ -70,7 +68,6 @@ const iconColors = [
   "text-violet-500 bg-violet-50",
   "text-rose-500 bg-rose-50",
 ];
-
 
 const CategorySection = () => {
   return (
@@ -90,17 +87,17 @@ const CategorySection = () => {
             scrollbar-hide
             py-6
             bg-amber-100
-          
           "
         >
+
           {/* Categories */}
           {categories.map((category, index) => {
             const Icon = category.icon;
 
             return (
-              <button
+              <Link
                 key={category.id}
-                type="button"
+                to={`/category/${encodeURIComponent(category.name)}`}
                 className="
                   group
                   flex
@@ -112,9 +109,10 @@ const CategorySection = () => {
                   flex-shrink-0
                   focus:outline-none
                   cursor-pointer
-                
+                  no-underline
                 "
               >
+
                 {/* Icon */}
                 <div
                   className={`
@@ -162,13 +160,14 @@ const CategorySection = () => {
                 >
                   {category.name}
                 </span>
-              </button>
+
+              </Link>
             );
           })}
 
           {/* All Categories */}
-          <button
-            type="button"
+          <Link
+            to="/products"
             className="
               group
               flex
@@ -179,8 +178,11 @@ const CategorySection = () => {
               sm:min-w-[85px]
               flex-shrink-0
               focus:outline-none
+              cursor-pointer
+              no-underline
             "
           >
+
             {/* Arrow Icon */}
             <div
               className="
@@ -229,7 +231,9 @@ const CategorySection = () => {
             >
               All Categories
             </span>
-          </button>
+
+          </Link>
+
         </div>
       </div>
     </section>
