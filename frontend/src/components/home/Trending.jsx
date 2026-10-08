@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
@@ -115,6 +115,32 @@ const TrendingNow = () => {
 
   const navigate = useNavigate();
 
+  const [wishlist, setWishlist] = useState([]);
+
+  // =========================
+  // LOAD WISHLIST
+  // =========================
+
+  useEffect(() => {
+    try {
+      const savedWishlist =
+        JSON.parse(localStorage.getItem("fashionHubWishlist")) || [];
+
+      setWishlist(savedWishlist);
+    } catch (error) {
+      console.error("Error loading wishlist:", error);
+      setWishlist([]);
+    }
+  }, []);
+
+  // =========================
+  // CHECK WISHLIST
+  // =========================
+
+  const isWishlisted = (productId) => {
+    return wishlist.some((item) => item.id === productId);
+  };
+
   // =========================
   // SLIDER
   // =========================
@@ -196,7 +222,43 @@ const TrendingNow = () => {
   // =========================
 
   const handleWishlist = (product) => {
-    console.log("Wishlist:", product);
+    try {
+      const existingWishlist =
+        JSON.parse(localStorage.getItem("fashionHubWishlist")) || [];
+
+      const alreadyExists = existingWishlist.some(
+        (item) => item.id === product.id
+      );
+
+      let updatedWishlist;
+
+      if (alreadyExists) {
+        // Remove from wishlist
+        updatedWishlist = existingWishlist.filter(
+          (item) => item.id !== product.id
+        );
+      } else {
+        // Add to wishlist
+        updatedWishlist = [
+          ...existingWishlist,
+          product,
+        ];
+      }
+
+      // Save wishlist
+      localStorage.setItem(
+        "fashionHubWishlist",
+        JSON.stringify(updatedWishlist)
+      );
+
+      // Update local UI
+      setWishlist(updatedWishlist);
+
+      // Tell Navbar to update wishlist count
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
   };
 
   return (
@@ -253,235 +315,248 @@ const TrendingNow = () => {
             msOverflowStyle: "none",
           }}
         >
-          {trendingProducts.map((product) => (
-            <article
-              key={product.id}
-              data-card
-              className="
-                group
-                relative
-                flex
-                min-w-[calc(50%-6px)]
-                max-w-[calc(50%-6px)]
-                flex-shrink-0
-                flex-col
-                overflow-hidden
-                rounded-2xl
-                border
-                border-[#e5e7eb]
-                bg-white
-                shadow-sm
-                transition-all
-                duration-500
-                hover:-translate-y-1
-                hover:shadow-lg
-                sm:min-w-[220px]
-                sm:max-w-[220px]
-                md:min-w-[235px]
-                md:max-w-[235px]
-                lg:min-w-[245px]
-                lg:max-w-[245px]
-                xl:min-w-[250px]
-                xl:max-w-[250px]
-              "
-            >
-              {/* ================= IMAGE ================= */}
+          {trendingProducts.map((product) => {
+            const wishlisted = isWishlisted(product.id);
 
-              <Link
-                to={`/product/${product.id}`}
-                className="block"
+            return (
+              <article
+                key={product.id}
+                data-card
+                className="
+                  group
+                  relative
+                  flex
+                  min-w-[calc(50%-6px)]
+                  max-w-[calc(50%-6px)]
+                  flex-shrink-0
+                  flex-col
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-[#e5e7eb]
+                  bg-white
+                  shadow-sm
+                  transition-all
+                  duration-500
+                  hover:-translate-y-1
+                  hover:shadow-lg
+                  sm:min-w-[220px]
+                  sm:max-w-[220px]
+                  md:min-w-[235px]
+                  md:max-w-[235px]
+                  lg:min-w-[245px]
+                  lg:max-w-[245px]
+                  xl:min-w-[250px]
+                  xl:max-w-[250px]
+                "
               >
-                <div
-                  className="
-                    relative
-                    h-[180px]
-                    w-full
-                    overflow-hidden
-                    bg-[#f6d19d]
-                    sm:h-[220px]
-                    md:h-[230px]
-                    lg:h-[240px]
-                  "
-                >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    loading="lazy"
-                    className="
-                      h-full
-                      w-full
-                      object-cover
-                      transition-transform
-                      duration-700
-                      ease-out
-                      group-hover:scale-105
-                    "
-                  />
-
-                  {/* DISCOUNT */}
-
-                  <div
-                    className="
-                      absolute
-                      left-2
-                      top-2
-                      bg-[#d6b63d]
-                      px-2
-                      py-1
-                      text-[7px]
-                      font-medium
-                      tracking-wider
-                      text-black
-                      sm:left-2.5
-                      sm:top-2.5
-                      sm:text-[8px]
-                      md:text-[9px]
-                    "
-                  >
-                    {product.discount}
-                  </div>
-
-                  {/* WISHLIST */}
-
-                  <button
-                    type="button"
-                    aria-label={`Add ${product.name} to wishlist`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleWishlist(product);
-                    }}
-                    className="
-                      absolute
-                      right-2
-                      top-2
-                      flex
-                      h-7
-                      w-7
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-white
-                      text-[#333]
-                      shadow
-                      transition-all
-                      duration-300
-                      hover:scale-110
-                      hover:text-red-500
-                      sm:right-2.5
-                      sm:top-2.5
-                      sm:h-8
-                      sm:w-8
-                    "
-                  >
-                    <Heart
-                      size={14}
-                      strokeWidth={1.5}
-                    />
-                  </button>
-                </div>
-              </Link>
-
-              {/* ================= PRODUCT DETAILS ================= */}
-
-              <div className="flex flex-1 flex-col bg-white px-2.5 py-2.5 sm:px-3 sm:py-3">
-
-                {/* BRAND */}
-
-                <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-[#555] sm:text-[8px] md:text-[9px]">
-                  {product.brand}
-                </p>
-
-                {/* NAME */}
+                {/* ================= IMAGE ================= */}
 
                 <Link
                   to={`/product/${product.id}`}
                   className="block"
                 >
-                  <h3 className="mt-1 line-clamp-1 text-[10px] font-medium leading-snug text-[#161616] transition-colors duration-300 group-hover:text-[#13233f] sm:text-[11px] md:text-[12px]">
-                    {product.name}
-                  </h3>
+                  <div
+                    className="
+                      relative
+                      h-[180px]
+                      w-full
+                      overflow-hidden
+                      bg-[#f6d19d]
+                      sm:h-[220px]
+                      md:h-[230px]
+                      lg:h-[240px]
+                    "
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      loading="lazy"
+                      className="
+                        h-full
+                        w-full
+                        object-cover
+                        transition-transform
+                        duration-700
+                        ease-out
+                        group-hover:scale-105
+                      "
+                    />
+
+                    {/* DISCOUNT */}
+
+                    <div
+                      className="
+                        absolute
+                        left-2
+                        top-2
+                        bg-[#d6b63d]
+                        px-2
+                        py-1
+                        text-[7px]
+                        font-medium
+                        tracking-wider
+                        text-black
+                        sm:left-2.5
+                        sm:top-2.5
+                        sm:text-[8px]
+                        md:text-[9px]
+                      "
+                    >
+                      {product.discount}
+                    </div>
+
+                    {/* WISHLIST */}
+
+                    <button
+                      type="button"
+                      aria-label={
+                        wishlisted
+                          ? `Remove ${product.name} from wishlist`
+                          : `Add ${product.name} to wishlist`
+                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleWishlist(product);
+                      }}
+                      className="
+                        absolute
+                        right-2
+                        top-2
+                        flex
+                        h-7
+                        w-7
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-white
+                        text-[#333]
+                        shadow
+                        transition-all
+                        duration-300
+                        hover:scale-110
+                        hover:text-red-500
+                        sm:right-2.5
+                        sm:top-2.5
+                        sm:h-8
+                        sm:w-8
+                      "
+                    >
+                      <Heart
+                        size={14}
+                        strokeWidth={1.5}
+                        className={
+                          wishlisted
+                            ? "fill-red-500 text-red-500"
+                            : "text-[#333]"
+                        }
+                      />
+                    </button>
+                  </div>
                 </Link>
 
-                {/* PRICE */}
+                {/* ================= PRODUCT DETAILS ================= */}
 
-                <div className="mt-1.5 flex items-center gap-1.5">
-                  <span className="text-[10px] font-semibold text-[#c79816] sm:text-[11px] md:text-[12px]">
-                    {product.price}
-                  </span>
+                <div className="flex flex-1 flex-col bg-white px-2.5 py-2.5 sm:px-3 sm:py-3">
 
-                  <span className="text-[8px] text-gray-500 line-through sm:text-[9px] md:text-[10px]">
-                    {product.oldPrice}
-                  </span>
+                  {/* BRAND */}
+
+                  <p className="text-[7px] font-medium uppercase tracking-[0.2em] text-[#555] sm:text-[8px] md:text-[9px]">
+                    {product.brand}
+                  </p>
+
+                  {/* NAME */}
+
+                  <Link
+                    to={`/product/${product.id}`}
+                    className="block"
+                  >
+                    <h3 className="mt-1 line-clamp-1 text-[10px] font-medium leading-snug text-[#161616] transition-colors duration-300 group-hover:text-[#13233f] sm:text-[11px] md:text-[12px]">
+                      {product.name}
+                    </h3>
+                  </Link>
+
+                  {/* PRICE */}
+
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span className="text-[10px] font-semibold text-[#c79816] sm:text-[11px] md:text-[12px]">
+                      {product.price}
+                    </span>
+
+                    <span className="text-[8px] text-gray-500 line-through sm:text-[9px] md:text-[10px]">
+                      {product.oldPrice}
+                    </span>
+                  </div>
+
+                  {/* RATING */}
+
+                  <div className="mt-1.5 flex items-center gap-1">
+                    <Star
+                      size={10}
+                      fill="currentColor"
+                      strokeWidth={1}
+                      className="text-[#c79816] sm:h-[11px] sm:w-[11px]"
+                    />
+
+                    <span className="text-[8px] text-gray-600 sm:text-[9px]">
+                      {product.rating}
+                    </span>
+
+                    <span className="text-[8px] text-gray-400">
+                      ·
+                    </span>
+
+                    <span className="text-[8px] text-gray-500 sm:text-[9px]">
+                      {product.reviews} reviews
+                    </span>
+                  </div>
+
+                  {/* ================= ADD TO CART ================= */}
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleAddToCart(product);
+                    }}
+                    className="
+                      mt-2.5
+                      flex
+                      w-full
+                      items-center
+                      justify-center
+                      gap-1.5
+                      bg-[#13233f]
+                      py-2
+                      text-[8px]
+                      font-medium
+                      uppercase
+                      tracking-[0.12em]
+                      text-white
+                      transition-all
+                      duration-300
+                      hover:bg-[#c79816]
+                      hover:text-black
+                      hover:shadow-md
+                      active:scale-[0.98]
+                      sm:py-2.5
+                      sm:text-[9px]
+                      cursor-pointer
+                    "
+                  >
+                    <ShoppingCart
+                      size={12}
+                      strokeWidth={1.7}
+                    />
+
+                    Add to Cart
+                  </button>
                 </div>
-
-                {/* RATING */}
-
-                <div className="mt-1.5 flex items-center gap-1">
-                  <Star
-                    size={10}
-                    fill="currentColor"
-                    strokeWidth={1}
-                    className="text-[#c79816] sm:h-[11px] sm:w-[11px]"
-                  />
-
-                  <span className="text-[8px] text-gray-600 sm:text-[9px]">
-                    {product.rating}
-                  </span>
-
-                  <span className="text-[8px] text-gray-400">
-                    ·
-                  </span>
-
-                  <span className="text-[8px] text-gray-500 sm:text-[9px]">
-                    {product.reviews} reviews
-                  </span>
-                </div>
-
-                {/* ================= ADD TO CART ================= */}
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleAddToCart(product);
-                  }}
-                  className="
-                    mt-2.5
-                    flex
-                    w-full
-                    items-center
-                    justify-center
-                    gap-1.5
-                    bg-[#13233f]
-                    py-2
-                    text-[8px]
-                    font-medium
-                    uppercase
-                    tracking-[0.12em]
-                    text-white
-                    transition-all
-                    duration-300
-                    hover:bg-[#c79816]
-                    hover:text-black
-                    hover:shadow-md
-                    active:scale-[0.98]
-                    sm:py-2.5
-                    sm:text-[9px]
-                    cursor-pointer
-                  "
-                >
-                  <ShoppingCart
-                    size={12}
-                    strokeWidth={1.7}
-                  />
-
-                  Add to Cart
-                </button>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
 
         {/* ================= BOTTOM CONTROLS ================= */}

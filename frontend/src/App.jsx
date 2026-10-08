@@ -16,6 +16,7 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import ForgotPassword from "./pages/ForgotPassword";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
   return (
@@ -44,6 +45,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
           <Route path="/cart" element={<Cart/>}/>
           <Route path="/checkout" element={<Checkout/>}/>
+          <Route path="/wishlist" element={<Wishlist/>}/>
+
         </Route>
       </Routes>
     </BrowserRouter>

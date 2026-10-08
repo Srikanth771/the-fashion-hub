@@ -1,15 +1,86 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ArrowRight, Zap, ShoppingBag } from "lucide-react";
+import {
+  ArrowRight,
+  Zap,
+  ShoppingBag,
+  Heart,
+  ShoppingCart,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const FlashDeals = () => {
+  const navigate = useNavigate();
+
+  /* =========================================================
+     FLASH DEAL PRODUCTS
+  ========================================================= */
+
+  const flashProducts = [
+    {
+      id: "flash-earbuds",
+      brand: "FASHION HUB",
+      name: "Premium Wireless Earbuds",
+      price: 1299,
+      oldPrice: 2499,
+      discount: "48% OFF",
+      category: "Electronics",
+      image: null,
+      type: "earbuds",
+    },
+    {
+      id: "flash-watch",
+      brand: "FASHION HUB",
+      name: "Premium Smart Watch",
+      price: 1799,
+      oldPrice: 3499,
+      discount: "49% OFF",
+      category: "Accessories",
+      image: null,
+      type: "watch",
+    },
+    {
+      id: "flash-shoes",
+      brand: "FASHION HUB",
+      name: "Premium Casual Shoes",
+      price: 1499,
+      oldPrice: 2999,
+      discount: "50% OFF",
+      category: "Footwear",
+      image: null,
+      type: "shoes",
+    },
+  ];
+
+  /* =========================================================
+     STATES
+  ========================================================= */
+
+  const [wishlist, setWishlist] = useState([]);
   const [timeLeft, setTimeLeft] = useState({
     days: 2,
     hours: 14,
     minutes: 36,
     seconds: 48,
   });
+
+  /* =========================================================
+     LOAD WISHLIST
+  ========================================================= */
+
+  useEffect(() => {
+    const savedWishlist =
+      JSON.parse(
+        localStorage.getItem("fashionHubWishlist")
+      ) || [];
+
+    setWishlist(savedWishlist);
+  }, []);
+
+  /* =========================================================
+     COUNTDOWN TIMER
+  ========================================================= */
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -50,15 +121,317 @@ const FlashDeals = () => {
     return () => clearInterval(timer);
   }, []);
 
+  /* =========================================================
+     FORMAT NUMBER
+  ========================================================= */
+
   const formatNumber = (number) => {
     return String(number).padStart(2, "0");
+  };
+
+  /* =========================================================
+     CHECK WISHLIST
+  ========================================================= */
+
+  const isWishlisted = (productId) => {
+    return wishlist.some(
+      (item) => item.id === productId
+    );
+  };
+
+  /* =========================================================
+     TOGGLE WISHLIST
+  ========================================================= */
+
+  const toggleWishlist = (product) => {
+    const existingWishlist =
+      JSON.parse(
+        localStorage.getItem("fashionHubWishlist")
+      ) || [];
+
+    const alreadyExists = existingWishlist.some(
+      (item) => item.id === product.id
+    );
+
+    let updatedWishlist;
+
+    if (alreadyExists) {
+      updatedWishlist = existingWishlist.filter(
+        (item) => item.id !== product.id
+      );
+    } else {
+      updatedWishlist = [
+        ...existingWishlist,
+        product,
+      ];
+    }
+
+    localStorage.setItem(
+      "fashionHubWishlist",
+      JSON.stringify(updatedWishlist)
+    );
+
+    setWishlist(updatedWishlist);
+
+    window.dispatchEvent(
+      new Event("wishlistUpdated")
+    );
+  };
+
+  /* =========================================================
+     ADD TO CART
+  ========================================================= */
+
+  const addToCart = (product) => {
+    const existingCart =
+      JSON.parse(
+        localStorage.getItem("fashionHubCart")
+      ) || [];
+
+    const existingItem = existingCart.find(
+      (item) => item.id === product.id
+    );
+
+    let updatedCart;
+
+    if (existingItem) {
+      updatedCart = existingCart.map((item) =>
+        item.id === product.id
+          ? {
+              ...item,
+              quantity: (item.quantity || 1) + 1,
+            }
+          : item
+      );
+    } else {
+      updatedCart = [
+        ...existingCart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
+    }
+
+    localStorage.setItem(
+      "fashionHubCart",
+      JSON.stringify(updatedCart)
+    );
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+
+    navigate("/cart");
+  };
+
+  /* =========================================================
+     PRODUCT VISUAL
+  ========================================================= */
+
+  const ProductVisual = ({ product }) => {
+    if (product.type === "earbuds") {
+      return (
+        <div className="relative h-[82px] w-[82px] rounded-[22px] border-2 border-gray-200 bg-gray-50 shadow-inner">
+          <div className="absolute left-[20px] top-[15px] h-[34px] w-[15px] rounded-full bg-white shadow-md" />
+
+          <div className="absolute right-[20px] top-[15px] h-[34px] w-[15px] rounded-full bg-white shadow-md" />
+
+          <div className="absolute bottom-[9px] left-[27px] right-[27px] h-[4px] rounded-full bg-gray-200" />
+        </div>
+      );
+    }
+
+    if (product.type === "watch") {
+      return (
+        <div className="relative flex h-[110px] w-[80px] items-center justify-center rounded-[22px] bg-[#111820] shadow-lg">
+          {/* Strap */}
+
+          <div className="absolute -top-9 h-[55px] w-[48px] rounded-t-[22px] bg-[#0b1118]" />
+
+          <div className="absolute -bottom-9 h-[55px] w-[48px] rounded-b-[22px] bg-[#0b1118]" />
+
+          {/* Screen */}
+
+          <div className="relative z-10 flex h-[72px] w-[62px] items-center justify-center rounded-[16px] border-4 border-[#303943] bg-[#05090e]">
+            <div className="text-center">
+              <p className="text-[14px] font-bold text-white">
+                10:28
+              </p>
+
+              <p className="mt-1 text-[6px] text-[#e7ad3d]">
+                MON 12
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative h-[72px] w-[135px] rotate-[-5deg] rounded-[55%_45%_30%_25%] bg-[#e8f0eb] shadow-lg">
+        <div className="absolute left-[30px] top-[23px] h-1 w-16 rotate-[8deg] bg-gray-300" />
+
+        <div className="absolute left-[36px] top-[32px] h-1 w-14 rotate-[8deg] bg-gray-300" />
+
+        <div className="absolute bottom-[-4px] left-[12px] h-[12px] w-[112px] rounded-full bg-white shadow-sm" />
+      </div>
+    );
+  };
+
+  /* =========================================================
+     PRODUCT CARD
+  ========================================================= */
+
+  const ProductCard = ({ product }) => {
+    const active = isWishlisted(product.id);
+
+    return (
+      <div
+        className="
+          group
+          relative
+          w-[150px]
+          sm:w-[165px]
+        "
+      >
+        {/* PRODUCT IMAGE AREA */}
+
+        <div
+          className="
+            relative
+            flex
+            h-[145px]
+            w-full
+            items-center
+            justify-center
+            overflow-hidden
+            rounded-xl
+            bg-white
+            shadow-[0_12px_30px_rgba(0,0,0,0.25)]
+            transition-all
+            duration-300
+            group-hover:-translate-y-2
+            sm:h-[155px]
+          "
+        >
+          {/* DISCOUNT */}
+
+          <div className="absolute left-2 top-2 z-50 rounded-md bg-[#e7ad3d] px-2 py-1">
+            <span className="text-[8px] font-black text-[#061a2d]">
+              {product.discount}
+            </span>
+          </div>
+
+          {/* WISHLIST */}
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleWishlist(product);
+            }}
+            className="
+              absolute
+              right-2
+              top-2
+              z-50
+              flex
+              h-8
+              w-8
+              items-center
+              justify-center
+              rounded-full
+              bg-white
+              shadow-md
+              transition-all
+              duration-300
+              hover:scale-110
+            "
+            aria-label={
+              active
+                ? "Remove from wishlist"
+                : "Add to wishlist"
+            }
+          >
+            <Heart
+              size={16}
+              className={
+                active
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-600"
+              }
+            />
+          </button>
+
+          {/* PRODUCT VISUAL */}
+
+          <ProductVisual product={product} />
+        </div>
+
+        {/* PRODUCT DETAILS */}
+
+        <div className="mt-3">
+          <p className="text-[8px] font-bold tracking-[0.12em] text-[#e7ad3d]">
+            {product.brand}
+          </p>
+
+          <h3 className="mt-1 truncate text-xs font-bold text-white">
+            {product.name}
+          </h3>
+
+          <div className="mt-1 flex items-center gap-2">
+            <span className="text-sm font-black text-[#e7ad3d]">
+              ₹{product.price.toLocaleString("en-IN")}
+            </span>
+
+            <span className="text-[9px] text-white/40 line-through">
+              ₹{product.oldPrice.toLocaleString("en-IN")}
+            </span>
+          </div>
+
+          {/* ADD TO CART */}
+
+          <button
+            type="button"
+            onClick={() => addToCart(product)}
+            className="
+              mt-2
+              flex
+              w-full
+              items-center
+              justify-center
+              gap-1.5
+              rounded-md
+              bg-[#e7ad3d]
+              px-3
+              py-2
+              text-[9px]
+              font-bold
+              uppercase
+              tracking-[0.06em]
+              text-[#061a2d]
+              transition-all
+              duration-300
+              hover:bg-white
+            "
+          >
+            <ShoppingCart size={13} />
+
+            <span>Add to Cart</span>
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
     <section className="w-full bg-[#f7f7f7] px-3 py-4 sm:px-5 sm:py-5 lg:px-7 lg:py-6">
       <div
         className="
-          relative mx-auto
+          relative
+          mx-auto
           min-h-[360px]
           w-full
           max-w-[1480px]
@@ -75,17 +448,23 @@ const FlashDeals = () => {
         ====================================================== */}
 
         {/* Lightning glow */}
+
         <div className="pointer-events-none absolute -left-20 top-10 h-56 w-56 rounded-full bg-[#e7ad3d]/10 blur-3xl" />
 
         <div className="pointer-events-none absolute right-0 top-0 h-full w-[45%] bg-[radial-gradient(circle_at_center,rgba(231,173,61,0.13),transparent_65%)]" />
 
         {/* Small floating particles */}
+
         <div className="absolute left-[8%] top-[20%] h-2 w-2 rotate-45 bg-[#e7ad3d] opacity-80" />
+
         <div className="absolute left-[35%] top-[13%] h-2 w-2 rotate-45 bg-[#e7ad3d] opacity-70" />
+
         <div className="absolute left-[38%] bottom-[15%] h-3 w-3 rotate-45 bg-[#e7ad3d] opacity-60" />
+
         <div className="absolute right-[8%] bottom-[18%] h-2 w-2 rotate-45 bg-[#e7ad3d] opacity-70" />
 
         {/* Lightning lines */}
+
         <div className="pointer-events-none absolute right-[3%] top-[-20px] h-[280px] w-[250px] opacity-30">
           <svg
             viewBox="0 0 250 280"
@@ -111,7 +490,6 @@ const FlashDeals = () => {
         ====================================================== */}
 
         <div className="relative z-10 flex min-h-[360px] flex-col lg:min-h-[420px] lg:flex-row">
-
           {/* =================================================
               LEFT SIDE
           ================================================== */}
@@ -125,7 +503,7 @@ const FlashDeals = () => {
               px-6
               py-10
               sm:px-10
-              lg:w-[53%]
+              lg:w-[43%]
               lg:px-14
               lg:py-12
               xl:px-20
@@ -169,11 +547,13 @@ const FlashDeals = () => {
                 text-white
                 sm:text-6xl
                 md:text-7xl
-                lg:text-[76px]
-                xl:text-[86px]
+                lg:text-[70px]
+                xl:text-[80px]
               "
             >
-              <span className="block">Flash</span>
+              <span className="block">
+                Flash
+              </span>
 
               <span className="block text-[#e7ad3d]">
                 Deals
@@ -193,15 +573,17 @@ const FlashDeals = () => {
                 sm:text-sm
               "
             >
-              Grab incredible deals on our best-selling products.
-              Hurry, these offers won't last forever!
+              Grab incredible deals on our best-selling
+              products. Hurry, these offers won't last
+              forever!
             </p>
 
             {/* CTA */}
 
             <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-7">
-              <a
-                href="/products"
+              <button
+                type="button"
+                onClick={() => navigate("/products")}
                 className="
                   group
                   inline-flex
@@ -225,7 +607,9 @@ const FlashDeals = () => {
                   sm:px-8
                 "
               >
-                <span>Shop Now</span>
+                <span>
+                  Shop Now
+                </span>
 
                 <ArrowRight
                   size={16}
@@ -235,12 +619,14 @@ const FlashDeals = () => {
                     group-hover:translate-x-1
                   "
                 />
-              </a>
+              </button>
 
               <div className="flex items-center gap-2 text-[10px] text-white/50 sm:text-xs">
                 <ShoppingBag size={15} />
 
-                <span>Best prices guaranteed</span>
+                <span>
+                  Best prices guaranteed
+                </span>
               </div>
             </div>
           </div>
@@ -260,7 +646,7 @@ const FlashDeals = () => {
               justify-center
               px-5
               pb-10
-              lg:w-[25%]
+              lg:w-[22%]
               lg:px-0
               lg:pb-0
             "
@@ -330,9 +716,7 @@ const FlashDeals = () => {
               On Best Selling Products
             </p>
 
-            {/* =================================================
-                COUNTDOWN
-            ================================================== */}
+            {/* COUNTDOWN */}
 
             <div className="mt-5 flex items-center gap-1.5 sm:gap-2">
               <CountdownBox
@@ -364,11 +748,15 @@ const FlashDeals = () => {
           <div
             className="
               relative
-              hidden
-              w-[30%]
+              flex
+              w-full
               items-center
               justify-center
-              lg:flex
+              px-4
+              pb-10
+              lg:w-[35%]
+              lg:px-0
+              lg:pb-0
             "
           >
             {/* GOLD PLATFORM */}
@@ -376,7 +764,7 @@ const FlashDeals = () => {
             <div
               className="
                 absolute
-                bottom-[72px]
+                bottom-[55px]
                 left-[50%]
                 h-[70px]
                 w-[370px]
@@ -392,7 +780,7 @@ const FlashDeals = () => {
             <div
               className="
                 absolute
-                bottom-[88px]
+                bottom-[70px]
                 left-[50%]
                 h-[48px]
                 w-[350px]
@@ -402,114 +790,30 @@ const FlashDeals = () => {
               "
             />
 
-            {/* PRODUCT 1 - EARBUDS */}
+            {/* PRODUCT CARDS */}
 
             <div
               className="
-                absolute
-                bottom-[125px]
-                left-[14%]
+                relative
                 z-30
                 flex
-                h-[120px]
-                w-[120px]
-                items-center
+                items-end
                 justify-center
-                rounded-2xl
-                bg-white
-                shadow-[0_15px_35px_rgba(0,0,0,0.35)]
-                transition-transform
-                duration-500
-                hover:-translate-y-2
+                gap-2
+                sm:gap-4
               "
             >
-              <div className="relative h-[72px] w-[72px] rounded-[20px] border-2 border-gray-200 bg-gray-50">
-                <div className="absolute left-[18px] top-[14px] h-[30px] w-[14px] rounded-full bg-white shadow-md" />
-                <div className="absolute right-[18px] top-[14px] h-[30px] w-[14px] rounded-full bg-white shadow-md" />
-                <div className="absolute bottom-[8px] left-[24px] right-[24px] h-[4px] rounded-full bg-gray-200" />
-              </div>
-            </div>
+              <ProductCard
+                product={flashProducts[0]}
+              />
 
-            {/* PRODUCT 2 - WATCH */}
+              <ProductCard
+                product={flashProducts[1]}
+              />
 
-            <div
-              className="
-                absolute
-                bottom-[140px]
-                left-[43%]
-                z-40
-                flex
-                h-[145px]
-                w-[105px]
-                items-center
-                justify-center
-                rounded-[24px]
-                bg-[#111820]
-                shadow-[0_18px_40px_rgba(0,0,0,0.45)]
-                transition-transform
-                duration-500
-                hover:-translate-y-2
-              "
-            >
-              {/* Strap */}
-
-              <div className="absolute -top-10 h-[60px] w-[55px] rounded-t-[25px] bg-[#0b1118]" />
-
-              <div className="absolute -bottom-10 h-[60px] w-[55px] rounded-b-[25px] bg-[#0b1118]" />
-
-              {/* Watch screen */}
-
-              <div
-                className="
-                  relative
-                  z-10
-                  flex
-                  h-[90px]
-                  w-[76px]
-                  items-center
-                  justify-center
-                  rounded-[19px]
-                  border-4
-                  border-[#303943]
-                  bg-[#05090e]
-                "
-              >
-                <div className="text-center">
-                  <p className="text-[17px] font-bold text-white">
-                    10:28
-                  </p>
-
-                  <p className="mt-1 text-[7px] text-[#e7ad3d]">
-                    MON 12
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* PRODUCT 3 - SHOES */}
-
-            <div
-              className="
-                absolute
-                bottom-[95px]
-                right-[4%]
-                z-30
-                h-[100px]
-                w-[175px]
-                rotate-[-5deg]
-                rounded-[55%_45%_30%_25%]
-                bg-[#e8f0eb]
-                shadow-[0_18px_35px_rgba(0,0,0,0.35)]
-                transition-transform
-                duration-500
-                hover:-translate-y-2
-              "
-            >
-              <div className="absolute left-[38px] top-[30px] h-1 w-20 rotate-[8deg] bg-gray-300" />
-
-              <div className="absolute left-[45px] top-[40px] h-1 w-16 rotate-[8deg] bg-gray-300" />
-
-              <div className="absolute bottom-[-5px] left-[15px] h-[15px] w-[145px] rounded-full bg-white shadow-sm" />
+              <ProductCard
+                product={flashProducts[2]}
+              />
             </div>
 
             {/* BEST PRICE TAG */}
@@ -517,8 +821,8 @@ const FlashDeals = () => {
             <div
               className="
                 absolute
-                bottom-[35px]
-                left-[18%]
+                bottom-[15px]
+                left-[8%]
                 z-50
                 rotate-[10deg]
                 rounded-sm
@@ -535,8 +839,6 @@ const FlashDeals = () => {
                 Prices
               </p>
 
-              {/* Tag hole */}
-
               <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-[#061a2d]/30" />
             </div>
 
@@ -547,8 +849,8 @@ const FlashDeals = () => {
               fill="currentColor"
               className="
                 absolute
-                right-[10%]
-                top-[15%]
+                right-[5%]
+                top-[10%]
                 rotate-[10deg]
                 text-[#e7ad3d]
               "
@@ -564,7 +866,10 @@ const FlashDeals = () => {
    COUNTDOWN BOX
 ========================================================= */
 
-const CountdownBox = ({ value, label }) => {
+const CountdownBox = ({
+  value,
+  label,
+}) => {
   return (
     <div
       className="

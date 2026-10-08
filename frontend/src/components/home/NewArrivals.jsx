@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -143,16 +143,104 @@ const newArrivals = [
 const NewArrivals = () => {
   const navigate = useNavigate();
 
-  // =========================
+  const [wishlist, setWishlist] = useState([]);
+
+  // =========================================================
+  // LOAD WISHLIST
+  // =========================================================
+
+  useEffect(() => {
+    try {
+      const savedWishlist =
+        JSON.parse(
+          localStorage.getItem("fashionHubWishlist")
+        ) || [];
+
+      setWishlist(savedWishlist);
+    } catch (error) {
+      console.error(
+        "Error loading wishlist:",
+        error
+      );
+
+      setWishlist([]);
+    }
+  }, []);
+
+  // =========================================================
+  // CHECK IF PRODUCT IS WISHLISTED
+  // =========================================================
+
+  const isWishlisted = (productId) => {
+    return wishlist.some(
+      (item) => item.id === productId
+    );
+  };
+
+  // =========================================================
+  // ADD / REMOVE WISHLIST
+  // =========================================================
+
+  const handleWishlist = (product) => {
+    try {
+      const existingWishlist =
+        JSON.parse(
+          localStorage.getItem("fashionHubWishlist")
+        ) || [];
+
+      const alreadyExists = existingWishlist.some(
+        (item) => item.id === product.id
+      );
+
+      let updatedWishlist;
+
+      if (alreadyExists) {
+        // REMOVE FROM WISHLIST
+
+        updatedWishlist =
+          existingWishlist.filter(
+            (item) => item.id !== product.id
+          );
+      } else {
+        // ADD TO WISHLIST
+
+        updatedWishlist = [
+          ...existingWishlist,
+          product,
+        ];
+      }
+
+      localStorage.setItem(
+        "fashionHubWishlist",
+        JSON.stringify(updatedWishlist)
+      );
+
+      setWishlist(updatedWishlist);
+
+      // Update Navbar wishlist count
+      window.dispatchEvent(
+        new Event("wishlistUpdated")
+      );
+    } catch (error) {
+      console.error(
+        "Error updating wishlist:",
+        error
+      );
+    }
+  };
+
+  // =========================================================
   // ADD TO CART
-  // =========================
+  // =========================================================
 
   const handleAddToCart = (product) => {
     if (product.outOfStock) return;
 
     try {
       const existingCart =
-        JSON.parse(localStorage.getItem("fashionHubCart")) || [];
+        JSON.parse(
+          localStorage.getItem("fashionHubCart")
+        ) || [];
 
       const existingItem = existingCart.find(
         (item) => item.id === product.id
@@ -165,7 +253,8 @@ const NewArrivals = () => {
           item.id === product.id
             ? {
                 ...item,
-                quantity: (item.quantity || 1) + 1,
+                quantity:
+                  (item.quantity || 1) + 1,
               }
             : item
         );
@@ -185,30 +274,27 @@ const NewArrivals = () => {
       );
 
       // Update Navbar cart count
-      window.dispatchEvent(new Event("cartUpdated"));
+      window.dispatchEvent(
+        new Event("cartUpdated")
+      );
 
       // Navigate to cart
       navigate("/cart");
     } catch (error) {
-      console.error("Error adding product to cart:", error);
+      console.error(
+        "Error adding product to cart:",
+        error
+      );
     }
-  };
-
-  // =========================
-  // WISHLIST
-  // =========================
-
-  const handleWishlist = (product) => {
-    console.log("Added to wishlist:", product);
   };
 
   return (
     <section className="w-full bg-[#faf7ef] py-10 sm:py-8 md:py-10 lg:py-12">
       <div className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
 
-        {/* =========================
+        {/* =================================================
             HEADER
-        ========================== */}
+        ================================================== */}
 
         <div className="mb-7 flex items-end justify-between sm:mb-8 md:mb-10">
           <div>
@@ -242,9 +328,7 @@ const NewArrivals = () => {
             </h2>
           </div>
 
-          {/* =========================
-              DESKTOP VIEW ALL
-          ========================== */}
+          {/* DESKTOP VIEW ALL */}
 
           <Link
             to="/new-arrivals"
@@ -278,10 +362,9 @@ const NewArrivals = () => {
           </Link>
         </div>
 
-        {/* =========================
+        {/* =================================================
             PRODUCT GRID
-            5 COLUMNS × 2 ROWS
-        ========================== */}
+        ================================================== */}
 
         <div
           className="
@@ -297,364 +380,386 @@ const NewArrivals = () => {
             xl:gap-5
           "
         >
-          {newArrivals.map((product) => (
-            <div
-              key={product.id}
-              className="
-                group
-                relative
-                cursor-pointer
-                overflow-hidden
-                border
-                border-[#ddd7c9]
-                bg-white
-                shadow-[0_1px_4px_rgba(0,0,0,0.08)]
-                transition-all
-                duration-500
-                hover:-translate-y-1
-                hover:shadow-[0_12px_30px_rgba(0,0,0,0.12)]
-              "
-            >
+          {newArrivals.map((product) => {
+            const wishlisted = isWishlisted(
+              product.id
+            );
 
-              {/* =========================
-                  IMAGE
-              ========================== */}
-
+            return (
               <div
+                key={product.id}
                 className="
+                  group
                   relative
-                  h-[200px]
+                  cursor-pointer
                   overflow-hidden
-                  bg-[#f6d19d]
-                  sm:h-[230px]
-                  md:h-[220px]
-                  lg:h-[230px]
-                  xl:h-[245px]
+                  border
+                  border-[#ddd7c9]
+                  bg-white
+                  shadow-[0_1px_4px_rgba(0,0,0,0.08)]
+                  transition-all
+                  duration-500
+                  hover:-translate-y-1
+                  hover:shadow-[0_12px_30px_rgba(0,0,0,0.12)]
                 "
               >
 
-                {/* PRODUCT IMAGE */}
-
-                <Link to={`/product/${product.id}`}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    loading="lazy"
-                    className="
-                      h-full
-                      w-full
-                      object-cover
-                      transition-transform
-                      duration-700
-                      ease-out
-                      group-hover:scale-[1.05]
-                    "
-                  />
-                </Link>
-
-                {/* =========================
-                    DISCOUNT
-                ========================== */}
-
-                {product.discount && (
-                  <div
-                    className="
-                      absolute
-                      left-2
-                      top-2
-                      bg-[#d6b63d]
-                      px-2
-                      py-1
-                      text-[8px]
-                      font-medium
-                      tracking-[0.14em]
-                      text-black
-                      transition-all
-                      duration-300
-                      group-hover:-translate-y-0.5
-                      sm:left-3
-                      sm:top-3
-                      sm:px-3
-                      sm:py-1.5
-                      sm:text-[10px]
-                    "
-                  >
-                    {product.discount}
-                  </div>
-                )}
-
-                {/* =========================
-                    HEART / WISHLIST
-                ========================== */}
-
-                <button
-                  type="button"
-                  aria-label={`Add ${product.name} to wishlist`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleWishlist(product);
-                  }}
-                  className="
-                    absolute
-                    right-2
-                    top-2
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-white/95
-                    text-[#333]
-                    shadow-sm
-                    transition-all
-                    duration-300
-                    hover:scale-110
-                    hover:bg-white
-                    hover:text-red-500
-                    hover:shadow-md
-                    sm:right-3
-                    sm:top-3
-                    sm:h-10
-                    sm:w-10
-                  "
-                >
-                  <Heart
-                    size={16}
-                    strokeWidth={1.5}
-                    className="
-                      transition-all
-                      duration-300
-                      sm:h-[18px]
-                      sm:w-[18px]
-                    "
-                  />
-                </button>
-
-                {/* =========================
-                    OUT OF STOCK IMAGE LABEL
-                ========================== */}
-
-                {product.outOfStock && (
-                  <div
-                    className="
-                      absolute
-                      bottom-0
-                      left-0
-                      right-0
-                      flex
-                      h-7
-                      items-center
-                      justify-center
-                      bg-[#343b4a]
-                      text-[9px]
-                      font-medium
-                      tracking-wide
-                      text-white
-                      sm:h-8
-                      sm:text-[11px]
-                    "
-                  >
-                    Out of stock
-                  </div>
-                )}
-              </div>
-
-              {/* =========================
-                  PRODUCT DETAILS
-              ========================== */}
-
-              <div className="bg-white px-3 py-3 sm:px-4 sm:py-4">
-
-                {/* BRAND */}
-
-                <p
-                  className="
-                    text-[8px]
-                    font-medium
-                    uppercase
-                    tracking-[0.22em]
-                    text-[#555]
-                    sm:text-[10px]
-                    md:text-[11px]
-                  "
-                >
-                  {product.brand}
-                </p>
-
-                {/* PRODUCT NAME */}
-
-                <Link to={`/product/${product.id}`}>
-                  <h3
-                    className="
-                      mt-1.5
-                      line-clamp-1
-                      cursor-pointer
-                      text-[11px]
-                      font-medium
-                      leading-snug
-                      text-[#161616]
-                      transition-colors
-                      duration-300
-                      group-hover:text-[#13233f]
-                      hover:underline
-                      sm:mt-2
-                      sm:text-[13px]
-                      md:text-[14px]
-                    "
-                  >
-                    {product.name}
-                  </h3>
-                </Link>
-
-                {/* =========================
-                    PRICE
-                ========================== */}
+                {/* =================================================
+                    IMAGE
+                ================================================== */}
 
                 <div
                   className="
-                    mt-1.5
-                    flex
-                    items-center
-                    gap-1.5
-                    sm:mt-2
-                    sm:gap-2
+                    relative
+                    h-[200px]
+                    overflow-hidden
+                    bg-[#f6d19d]
+                    sm:h-[230px]
+                    md:h-[220px]
+                    lg:h-[230px]
+                    xl:h-[245px]
                   "
                 >
-                  <span
-                    className="
-                      text-[11px]
-                      font-medium
-                      text-[#c79816]
-                      sm:text-[13px]
-                      md:text-[14px]
-                    "
+
+                  {/* PRODUCT IMAGE */}
+
+                  <Link
+                    to={`/product/${product.id}`}
                   >
-                    {product.price}
-                  </span>
-
-                  <span
-                    className="
-                      text-[9px]
-                      text-gray-500
-                      line-through
-                      sm:text-[12px]
-                      md:text-[13px]
-                    "
-                  >
-                    {product.oldPrice}
-                  </span>
-                </div>
-
-                {/* =========================
-                    RATING
-                ========================== */}
-
-                <div
-                  className="
-                    mt-1.5
-                    flex
-                    items-center
-                    gap-1
-                    sm:mt-2
-                    sm:gap-1.5
-                  "
-                >
-                  <Star
-                    size={11}
-                    fill="currentColor"
-                    strokeWidth={1}
-                    className="text-[#c79816] sm:h-[13px] sm:w-[13px]"
-                  />
-
-                  <span className="text-[9px] text-gray-600 sm:text-[11px]">
-                    {product.rating}
-                  </span>
-
-                  <span className="text-[9px] text-gray-400 sm:text-[11px]">
-                    ·
-                  </span>
-
-                  <span className="text-[9px] text-gray-500 sm:text-[11px]">
-                    {product.reviews} reviews
-                  </span>
-                </div>
-
-                {/* =========================
-                    ADD TO CART
-                ========================== */}
-
-                <button
-                  type="button"
-                  disabled={product.outOfStock}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleAddToCart(product);
-                  }}
-                  className={`
-                    mt-3
-                    flex
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    py-2.5
-                    text-[9px]
-                    font-medium
-                    uppercase
-                    tracking-[0.14em]
-                    transition-all
-                    duration-300
-                    sm:mt-4
-                    sm:py-3
-                    sm:text-[10px]
-                    md:text-[11px]
-                    cursor-pointer
-
-                    ${
-                      product.outOfStock
-                        ? `
-                          cursor-not-allowed
-                          bg-gray-200
-                          text-gray-400
-                        `
-                        : `
-                          bg-[#13233f]
-                          text-white
-                          hover:bg-[#c79816]
-                          hover:text-black
-                          hover:shadow-md
-                          active:scale-[0.98]
-                        `
-                    }
-                  `}
-                >
-                  {!product.outOfStock && (
-                    <ShoppingCart
-                      size={14}
-                      strokeWidth={1.7}
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      loading="lazy"
                       className="
+                        h-full
+                        w-full
+                        object-cover
                         transition-transform
-                        duration-300
-                        group-hover:scale-110
+                        duration-700
+                        ease-out
+                        group-hover:scale-[1.05]
                       "
                     />
+                  </Link>
+
+                  {/* =================================================
+                      DISCOUNT
+                  ================================================== */}
+
+                  {product.discount && (
+                    <div
+                      className="
+                        absolute
+                        left-2
+                        top-2
+                        bg-[#d6b63d]
+                        px-2
+                        py-1
+                        text-[8px]
+                        font-medium
+                        tracking-[0.14em]
+                        text-black
+                        transition-all
+                        duration-300
+                        group-hover:-translate-y-0.5
+                        sm:left-3
+                        sm:top-3
+                        sm:px-3
+                        sm:py-1.5
+                        sm:text-[10px]
+                      "
+                    >
+                      {product.discount}
+                    </div>
                   )}
 
-                  {product.outOfStock
-                    ? "Out of Stock"
-                    : "Add to Cart"}
-                </button>
+                  {/* =================================================
+                      HEART / WISHLIST
+                  ================================================== */}
+
+                  <button
+                    type="button"
+                    aria-label={
+                      wishlisted
+                        ? `Remove ${product.name} from wishlist`
+                        : `Add ${product.name} to wishlist`
+                    }
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+
+                      handleWishlist(product);
+                    }}
+                    className="
+                      absolute
+                      right-2
+                      top-2
+                      z-20
+                      flex
+                      h-8
+                      w-8
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-white/95
+                      text-[#333]
+                      shadow-sm
+                      transition-all
+                      duration-300
+                      hover:scale-110
+                      hover:bg-white
+                      hover:shadow-md
+                      sm:right-3
+                      sm:top-3
+                      sm:h-10
+                      sm:w-10
+                    "
+                  >
+                    <Heart
+                      size={16}
+                      strokeWidth={1.5}
+                      className={`
+                        transition-all
+                        duration-300
+                        sm:h-[18px]
+                        sm:w-[18px]
+
+                        ${
+                          wishlisted
+                            ? "fill-red-500 text-red-500"
+                            : "text-[#333] hover:text-red-500"
+                        }
+                      `}
+                    />
+                  </button>
+
+                  {/* =================================================
+                      OUT OF STOCK
+                  ================================================== */}
+
+                  {product.outOfStock && (
+                    <div
+                      className="
+                        absolute
+                        bottom-0
+                        left-0
+                        right-0
+                        flex
+                        h-7
+                        items-center
+                        justify-center
+                        bg-[#343b4a]
+                        text-[9px]
+                        font-medium
+                        tracking-wide
+                        text-white
+                        sm:h-8
+                        sm:text-[11px]
+                      "
+                    >
+                      Out of stock
+                    </div>
+                  )}
+                </div>
+
+                {/* =================================================
+                    PRODUCT DETAILS
+                ================================================== */}
+
+                <div className="bg-white px-3 py-3 sm:px-4 sm:py-4">
+
+                  {/* BRAND */}
+
+                  <p
+                    className="
+                      text-[8px]
+                      font-medium
+                      uppercase
+                      tracking-[0.22em]
+                      text-[#555]
+                      sm:text-[10px]
+                      md:text-[11px]
+                    "
+                  >
+                    {product.brand}
+                  </p>
+
+                  {/* PRODUCT NAME */}
+
+                  <Link
+                    to={`/product/${product.id}`}
+                  >
+                    <h3
+                      className="
+                        mt-1.5
+                        line-clamp-1
+                        cursor-pointer
+                        text-[11px]
+                        font-medium
+                        leading-snug
+                        text-[#161616]
+                        transition-colors
+                        duration-300
+                        group-hover:text-[#13233f]
+                        hover:underline
+                        sm:mt-2
+                        sm:text-[13px]
+                        md:text-[14px]
+                      "
+                    >
+                      {product.name}
+                    </h3>
+                  </Link>
+
+                  {/* =================================================
+                      PRICE
+                  ================================================== */}
+
+                  <div
+                    className="
+                      mt-1.5
+                      flex
+                      items-center
+                      gap-1.5
+                      sm:mt-2
+                      sm:gap-2
+                    "
+                  >
+                    <span
+                      className="
+                        text-[11px]
+                        font-medium
+                        text-[#c79816]
+                        sm:text-[13px]
+                        md:text-[14px]
+                      "
+                    >
+                      {product.price}
+                    </span>
+
+                    <span
+                      className="
+                        text-[9px]
+                        text-gray-500
+                        line-through
+                        sm:text-[12px]
+                        md:text-[13px]
+                      "
+                    >
+                      {product.oldPrice}
+                    </span>
+                  </div>
+
+                  {/* =================================================
+                      RATING
+                  ================================================== */}
+
+                  <div
+                    className="
+                      mt-1.5
+                      flex
+                      items-center
+                      gap-1
+                      sm:mt-2
+                      sm:gap-1.5
+                    "
+                  >
+                    <Star
+                      size={11}
+                      fill="currentColor"
+                      strokeWidth={1}
+                      className="text-[#c79816] sm:h-[13px] sm:w-[13px]"
+                    />
+
+                    <span className="text-[9px] text-gray-600 sm:text-[11px]">
+                      {product.rating}
+                    </span>
+
+                    <span className="text-[9px] text-gray-400 sm:text-[11px]">
+                      ·
+                    </span>
+
+                    <span className="text-[9px] text-gray-500 sm:text-[11px]">
+                      {product.reviews} reviews
+                    </span>
+                  </div>
+
+                  {/* =================================================
+                      ADD TO CART
+                  ================================================== */}
+
+                  <button
+                    type="button"
+                    disabled={product.outOfStock}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+
+                      handleAddToCart(product);
+                    }}
+                    className={`
+                      mt-3
+                      flex
+                      w-full
+                      items-center
+                      justify-center
+                      gap-2
+                      py-2.5
+                      text-[9px]
+                      font-medium
+                      uppercase
+                      tracking-[0.14em]
+                      transition-all
+                      duration-300
+                      sm:mt-4
+                      sm:py-3
+                      sm:text-[10px]
+                      md:text-[11px]
+
+                      ${
+                        product.outOfStock
+                          ? `
+                            cursor-not-allowed
+                            bg-gray-200
+                            text-gray-400
+                          `
+                          : `
+                            cursor-pointer
+                            bg-[#13233f]
+                            text-white
+                            hover:bg-[#c79816]
+                            hover:text-black
+                            hover:shadow-md
+                            active:scale-[0.98]
+                          `
+                      }
+                    `}
+                  >
+                    {!product.outOfStock && (
+                      <ShoppingCart
+                        size={14}
+                        strokeWidth={1.7}
+                        className="
+                          transition-transform
+                          duration-300
+                          group-hover:scale-110
+                        "
+                      />
+                    )}
+
+                    {product.outOfStock
+                      ? "Out of Stock"
+                      : "Add to Cart"}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* =========================
+        {/* =================================================
             MOBILE VIEW ALL
-        ========================== */}
+        ================================================== */}
 
         <div className="mt-6 flex justify-end sm:hidden">
           <Link
