@@ -57,7 +57,7 @@ const AdminLogin = () => {
 
             <div>
               <h1 className="text-2xl font-bold">
-                Fashion Hub
+                THE FASHION HUB
               </h1>
 
               <p className="text-xs tracking-widest text-[#d49a4b]">
