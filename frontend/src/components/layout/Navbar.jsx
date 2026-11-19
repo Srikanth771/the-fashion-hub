@@ -241,7 +241,7 @@ export default function Navbar() {
                   ALERTS
               ================================================= */}
 
-              <Link to="/alerts">
+              <Link to="/notifications">
                 <motion.div
                   whileHover={{ y: -3 }}
                   className={navIcon}
